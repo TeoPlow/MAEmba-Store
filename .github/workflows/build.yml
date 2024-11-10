@@ -8,20 +8,20 @@ jobs:
     steps:
       - name: Checkout 
         uses: actions/checkout@v4
-      - name: Set up Python
+      - name: Установка python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      - name: Install dependencies
+      - name: Установка зависимостей
         run: |
           pip install -r requirements.txt
           pip install alembic pytest flake8 bandit safety
-      - name: Lint Python code
+      - name: Анализ python кода
         run: flake8 .
-      - name: Security check
+      - name: Проверка безопасности
         run: bandit -r .
-      - name: Dependency vulnerabilities check
-        run: safety check
+      - name: Проверка уязвимостей зависимостей
+        run: safety scan
 
 #  test-backend:
 #    runs-on: [ubuntu-latest, windows-latest]  # Проверка на обеих системах
