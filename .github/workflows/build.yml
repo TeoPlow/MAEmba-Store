@@ -1,0 +1,60 @@
+name: Build-test
+
+on: [push, pull_request]
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest  # Проверка на обеих системах
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install backend dependencies
+        run: npm install
+#      - name: Install dependencies
+#        run: pip install alembic pytest flake8 bandit safety
+#      - name: Lint Python code
+#        run: flake8 .
+#      - name: Security check
+#        run: bandit -r .
+#      - name: Dependency vulnerabilities check
+#        run: safety check
+
+#  test-backend:
+#    runs-on: [ubuntu-latest, windows-latest]  # Проверка на обеих системах
+#    needs: build-backend
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Set up Python
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: '3.12'
+#       services:
+#         postgres:
+#           image: postgres:latest
+#           env:
+#             POSTGRES_USER: test_user
+#             POSTGRES_PASSWORD: test_password
+#             POSTGRES_DB: test_db
+#         ports:
+#             - 5432:5432
+#      - name: Run tests
+#        run: pytest
+        
+  build-frontend:
+    runs-on: ubuntu-latest  # Проверка на обеих системах
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install frontend dependencies
+        run: npm install
+#      - name: Lint frontend code
+#        run: npm run lint
+#      - name: Build frontend
+#        run: npm run build
