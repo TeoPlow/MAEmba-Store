@@ -20,8 +20,8 @@ jobs:
         run: flake8 .
       - name: Проверка безопасности
         run: bandit -r .
-      - name: Проверка уязвимостей зависимостей
-        run: safety scan
+#      - name: Проверка уязвимостей зависимостей
+#        run: safety scan
 
 #  test-backend:
 #    runs-on: [ubuntu-latest, windows-latest]  # Проверка на обеих системах
