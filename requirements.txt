@@ -6,6 +6,9 @@ psycopg2-binary  # Для работы с PostgreSQL в SQLAlchemy
 yookassa  # Официальная библиотека для Yoomoney в Python
 oauthlib
 pyjwt
+uvicorn
+colorama
+python-dotenv
 
 # Библиотеки для ML
 # catboost
