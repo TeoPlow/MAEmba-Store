@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 import logging
 import logging.config
-from core.config import logger_config, log
+from core.logging import logger_config, log
 
 logging.config.dictConfig(logger_config)
 

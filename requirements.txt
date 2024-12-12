@@ -9,6 +9,7 @@ pyjwt
 uvicorn
 colorama
 python-dotenv
+passlib
 
 # Библиотеки для ML
 # catboost
