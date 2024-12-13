@@ -3,6 +3,7 @@ from colorama import Fore, Style
 import logging
 
 log = logging.getLogger('main_service')
+log.setLevel(logging.DEBUG)
 
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):

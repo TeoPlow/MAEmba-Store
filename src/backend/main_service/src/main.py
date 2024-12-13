@@ -12,3 +12,5 @@ app.include_router(order.router, prefix="/order", tags=["Order"])
 @app.get("/")
 async def root():
     return {"message": "Это Main API для проекта MAEMBA Store"}
+
+
