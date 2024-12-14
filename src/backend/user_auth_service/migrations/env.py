@@ -1,9 +1,8 @@
 from logging.config import fileConfig
 
-from src.config import DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER
+from src.core.config import DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER
 
-from src.models.IndividualProfile import BaseUsers
-from src.models.OrganizationProfile import BaseUsers
+from src.models.User import BaseUsers
 from src.models.Auth import BaseUsers
 
 

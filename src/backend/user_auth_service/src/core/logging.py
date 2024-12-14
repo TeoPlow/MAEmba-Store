@@ -2,6 +2,8 @@ import sys
 from colorama import Fore, Style
 import logging
 
+log = logging.getLogger('main_service')
+
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):
     COLORS = {
@@ -37,12 +39,12 @@ logger_config = {
         },
     },
     "loggers": {
-        'server': {
+        'main_service': {
             'level': 'DEBUG',
             'handlers': ["screen_handler"],
             'propagate': False
         },
-        'app': {
+        'user_auth_service': {
             'level': 'DEBUG',
             'handlers': ["screen_handler"],
             'propagate': False

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from src.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
+from core.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
 # База данных для пользователя
 BaseUsers = declarative_base()
