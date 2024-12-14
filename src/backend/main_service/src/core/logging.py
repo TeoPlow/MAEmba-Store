@@ -1,9 +1,10 @@
 import sys
+from core.config import LOG_LEVEL
 from colorama import Fore, Style
 import logging
+import logging.config
 
 log = logging.getLogger('main_service')
-log.setLevel(logging.DEBUG)
 
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):
@@ -40,15 +41,16 @@ logger_config = {
         },
     },
     "loggers": {
-        'server': {
-            'level': 'DEBUG',
+        'main_service': {
+            'level': "DEBUG",
             'handlers': ["screen_handler"],
             'propagate': False
         },
-        'app': {
-            'level': 'DEBUG',
+        'user_auth_service': {
+            'level': "DEBUG",
             'handlers': ["screen_handler"],
             'propagate': False
         },
     }
 }
+logging.config.dictConfig(logger_config)

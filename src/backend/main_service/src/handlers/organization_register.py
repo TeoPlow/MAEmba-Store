@@ -1,20 +1,17 @@
 from typing import Any
 import requests
 from requests.exceptions import RequestException
-from schemas.OrganizationProfile import OrganizationProfile
+from schemas.User import User
 from core.exceptions import SpecialException
 from core.config import USER_API_URL
-from core.logging import logger_config, log
-import logging.config
-
-logging.config.dictConfig(logger_config)
+from core.logging import log
 
 def organization_register_handler(data: dict[str, Any]) -> int | SpecialException:
     """
     Отправляет запрос к API об регистрации ЮР.ЛИЦа, добавляя его данные в auth_database.
         Параметры:
             data: Словарь в формате response.json с инфой:
-                Всё из class OrganizationProfile
+                Всё из class User
 
         Возвращает:
             ID зарегистрированного пользователя, либо SpecialException.
@@ -23,8 +20,11 @@ def organization_register_handler(data: dict[str, Any]) -> int | SpecialExceptio
     headers = {"Content-Type": "application/json"}
     
     try:
-        data_check = OrganizationProfile.validate_data(data)
-        log.debug(f"Получил верные данные: {data_check.print_profile}")
+        if data["user_type"] == 'org':
+            data_check = User.validate_data(data)
+            log.debug(f"Получил верные данные: {data_check.print_profile}")
+        else:
+            raise SpecialException("Переданы данные НЕ организации")
 
         response = requests.post(url, json=data, headers=headers)
         response.raise_for_status()

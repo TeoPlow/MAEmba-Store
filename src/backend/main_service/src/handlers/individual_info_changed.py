@@ -1,12 +1,17 @@
 from typing import Any
+import requests
+from requests.exceptions import RequestException
+from schemas.User import User
 from core.exceptions import SpecialException
+from core.config import USER_API_URL
+from core.logging import log
 
 def individual_info_changed_handler(data: dict[str, Any]) -> bool | SpecialException:
     """
     Отправляет запрос к API об изменении информации об аккаунте ФИЗ.ЛИЦА в user_database.
         Параметры:
             data: Словарь в формате response.json с инфой:
-                user_id и только изменяемые данные из class IndividualProfile
+                user_id и только изменяемые данные из class User
 
         Возвращает:
             Булевое значение о том, изменена ли информация, либо SpecialException.
@@ -15,7 +20,7 @@ def individual_info_changed_handler(data: dict[str, Any]) -> bool | SpecialExcep
     headers = {"Content-Type": "application/json"}
     
     try:
-        data_check = IndividualProfile.validate_data(data)
+        data_check = User.validate_data(data)
         log.info(f"Получил верные данные: {data_check.print_profile}")
 
         response = requests.put(url, json=data, headers=headers)

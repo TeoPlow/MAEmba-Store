@@ -5,8 +5,8 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "user_auth_db",
-            "database": "user_auth_db",
+            "name": "mae_store_users_db",
+            "database": "mae_store_users_db",
             "username": "postgres",
             "password": ""
         }
