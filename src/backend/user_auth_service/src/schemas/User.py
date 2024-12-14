@@ -1,8 +1,8 @@
 from typing import Any, Dict, Optional
 from pydantic import EmailStr
 from datetime import date, datetime, timezone
-from db.database import BaseUsers
-from models.enum.UserRole import UserRoleEnum
+from src.db.database import BaseUsers
+from src.models.enum.UserRole import UserRoleEnum
 from passlib.hash import pbkdf2_sha256
 from uuid import uuid4
 
@@ -15,14 +15,14 @@ from sqlalchemy import (
     String,
 )
 
-from core.logging import log
+from src.core.logging import log
 
 
 class User(BaseUsers):
     """
     Хранит в себе объект "Пользователя" который сразу может быть или Физ.Лицом или Юр.Лицом.
     """
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     user_type = Column(String(3), nullable=False)

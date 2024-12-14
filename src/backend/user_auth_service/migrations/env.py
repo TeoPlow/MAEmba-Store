@@ -5,7 +5,6 @@ from src.core.config import DB_HOST, DB_PASS, DB_NAME, DB_PORT, DB_USER
 from src.models.User import BaseUsers
 from src.models.Auth import BaseUsers
 
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
