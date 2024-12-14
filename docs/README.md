@@ -2,4 +2,4 @@
 
 ## Архитектура БД
 
-![alt text](MAE-Store-DB.png)
+![alt text](Mae-Store-DB.png)
