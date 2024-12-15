@@ -51,9 +51,9 @@ def get_user_info_handler(user_id: UUID) -> dict[str, Any] | SpecialException:
         result = response.json()
         log.debug(f"Получил от USER API: {result}")
         
-        if result.get("status") == "success" and "user_id" in result:
-            log.debug(f"Возвращаю инфу о {result["email"]}")
-            return result
+        if result["status"] == "success":
+            log.debug(f"Возвращаю инфу о {result["data"]["email"]}")
+            return result["data"]
         else:
             raise SpecialException("Передача прошла не успешно")
     

@@ -48,7 +48,7 @@ async def register(request: Request):
     try:
         data = await request.json()
         registered_user_id: UUID = individual_register_handler(data)
-        return {"status": "success", "data": registered_user_id}
+        return {"status": "success", "user_id": registered_user_id}
     except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}

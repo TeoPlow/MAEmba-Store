@@ -18,6 +18,7 @@ async def register(request: Request):
     try:
         data = await request.json()
         registered_user_id: UUID = user_register_handler(data)
+        log.debug(f"Регистрация успешно окончена")
         return {"status": "success", "data": registered_user_id}
     except SpecialException as e:
         log.warning(e)

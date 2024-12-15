@@ -32,16 +32,16 @@ class User(BaseUsers):
     company_name = Column(String(255), nullable=True)
     company_type = Column(String(50), nullable=True)
     director_name = Column(String(255), nullable=True)
-    registration_date = Column(Date, nullable=False)
-    legal_address = Column(String(255), nullable=False)
-    physical_address = Column(String(255), nullable=False)
-    inn = Column(String(12), nullable=False)
-    ogrn = Column(String(13), nullable=False)
-    kpp = Column(String(9), nullable=False)
-    bik = Column(String(9), nullable=False)
-    correspondent_account = Column(String(20), nullable=False)
-    payment_account = Column(String(20), nullable=False)
-    contact_number = Column(String(50), unique=True, nullable=True)
+    registration_date = Column(Date, nullable=True)
+    legal_address = Column(String(255), nullable=True)
+    physical_address = Column(String(255), nullable=True)
+    inn = Column(String(12), nullable=True)
+    ogrn = Column(String(13), nullable=True)
+    kpp = Column(String(9), nullable=True)
+    bik = Column(String(9), nullable=True)
+    correspondent_account = Column(String(20), nullable=True)
+    payment_account = Column(String(20), nullable=True)
+    contact_number = Column(String(50), unique=True, nullable=False)
     user_role = Column(Enum(UserRoleEnum, create_type=False), nullable=False)
     created = Column(
         DateTime(timezone=True), default=datetime.now(timezone.utc)
@@ -71,40 +71,24 @@ class User(BaseUsers):
                 correspondent_account: Optional[int]=None, # Корреспонденсткий счёт - 20 цифр 
                 payment_account: Optional[int]=None # Расчётный счёт - 20 цифр
                 ):
-        self._user_type = None
-        self._username = None
-        self._email = None
-        self._company_name = None
-        self._company_type = None
-        self._director_name = None
-        self._registration_date = None
-        self._legal_address = None
-        self._physical_address = None
-        self._inn = None
-        self._ogrn = None
-        self._kpp = None
-        self._bik = None
-        self._correspondent_account = None
-        self._payment_account = None
-        self._contact_number = None
-
-        self.user_type = user_type
-        self.username = username
-        self.email = email
+        self.user_type = self.check_user_type(user_type)
+        self.username = self.check_username(username)
+        self.email = self.check_email(email)
         self.password_hash = pbkdf2_sha256.hash(password)
-        self.company_name = company_name
-        self.company_type = company_type
-        self.director_name = director_name
-        self.registration_date = registration_date
-        self.legal_address = legal_address
-        self.physical_address = physical_address
-        self.inn = inn
-        self.ogrn = ogrn
-        self.kpp = kpp
-        self.bik = bik
-        self.correspondent_account = correspondent_account
-        self.payment_account = payment_account
-        self.contact_number = contact_number
+        self.company_name = self.check_company_name(company_name)
+        self.company_type = self.check_company_type(company_type)
+        self.director_name = self.check_director_name(director_name)
+        self.registration_date = self.check_registration_date(registration_date)
+        self.legal_address = self.check_legal_address(legal_address)
+        self.physical_address = self.check_physical_address(physical_address)
+        self.inn = self.check_inn(inn)
+        self.ogrn = self.check_ogrn(ogrn)
+        self.kpp = self.check_kpp(kpp)
+        self.bik = self.check_bik(bik)
+        self.correspondent_account = self.check_correspondent_account(correspondent_account)
+        self.payment_account = self.check_payment_account(payment_account)
+        self.contact_number = self.check_contact_number(contact_number)
+        self.user_role = UserRoleEnum.NotVerifyed
         
     
     def check_password(self, password: str) -> bool:
@@ -112,184 +96,103 @@ class User(BaseUsers):
         log.debug(f"Пароль проверен у {self.email}: {'success' if result else 'failure'}")
         return result
     
-    
     @property
     def password(self) -> str:
         return self.password_hash
     
-    @password.setter
-    def password(self, old_password: str, new_password: str) -> None:
+    def update_password(self, old_password: str, new_password: str) -> None:
         if not self.check_password(old_password):
             log.warning(f"Ошибка при смене пароля у {self.email}: Неверный старый пароль")
             raise ValueError("Старый пароль не верен")
         self.password_hash = pbkdf2_sha256.hash(new_password)
         log.info(f"Пароль успешно сменён для {self.email}")
 
-    @property
-    def user_type(self) -> str:
-        return self._user_type
-    
-    @user_type.setter
-    def user_type(self, value: str):
+
+    def check_user_type(self, value: str):
         if value not in ["org", "ind"]:
             raise ValueError("Тип пользователя должно быть 'org' или 'ind'")
-        self._user_type = value
-    
-    @property
-    def username(self) -> str:
-        return self._username
-    
-    @username.setter
-    def username(self, value: str):
+        return value
+
+    def check_username(self, value: str):
         if not isinstance(value, str):
             raise ValueError("Имя пользователя должно быть str")
-        self._username = value
+        return value
 
-    @property
-    def email(self) -> str:
-        return self._email
-
-    @email.setter
-    def email(self, value: str):
+    def check_email(self, value: str):
         if "@" not in value:
             raise ValueError("Неверный адрес почты")
-        self._email = value
+        return value
 
-    @property
-    def company_name(self) -> str:
-        return self._company_name
-
-    @company_name.setter
-    def company_name(self, value: Optional[str]):
+    def check_company_name(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError("company_name должен быть str")
-        self._company_name = value
+        return value
 
-    @property
-    def company_type(self) -> str:
-        return self._company_type
-
-    @company_type.setter
-    def company_type(self, value: Optional[str]):
+    def check_company_type(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError("company_type должен быть str")
-        self._company_type = value
+        return value
 
-    @property
-    def director_name(self) -> str:
-        return self._director_name
-
-    @director_name.setter
-    def director_name(self, value: Optional[str]):
+    def check_director_name(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError("director_name должен быть str")
-        self._director_name = value
+        return value
 
-    @property
-    def registration_date(self) -> date:
-        return self._registration_date
-
-    @registration_date.setter
-    def registration_date(self, value: Optional[date]):
+    def check_registration_date(self, value: Optional[date]):
         if not isinstance(value, Optional[date]):
             raise ValueError("registration_date должен быть date")
-        self._registration_date = value
+        return value
 
-    @property
-    def legal_address(self) -> str:
-        return self._legal_address
-
-    @legal_address.setter
-    def legal_address(self, value: Optional[str]):
+    def check_legal_address(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError("legal_address должен быть str")
-        self._legal_address = value
+        return value
 
-    @property
-    def physical_address(self) -> str:
-        return self._physical_address
-
-    @physical_address.setter
-    def physical_address(self, value: Optional[str]):
+    def check_physical_address(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError("physical_address должен быть str")
-        self._physical_address = value
+        return value
 
-    @property
-    def inn(self) -> int:
-        return self._inn
-
-    @inn.setter
-    def inn(self, value: Optional[int]):
+    def check_inn(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) not in (10, 12):
                 raise ValueError("INN должен быть int с 10 или 12 цифрами")
-        self._inn = value
+        return value
 
-    @property
-    def ogrn(self) -> int:
-        return self._ogrn
-
-    @ogrn.setter
-    def ogrn(self, value: Optional[int]):
+    def check_ogrn(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 13:
                 raise ValueError("ogrn должен быть int с 13 цифрами")
-        self._ogrn = value
+        return value
 
-    @property
-    def kpp(self) -> int:
-        return self._kpp
-
-    @kpp.setter
-    def kpp(self, value: Optional[int]):
+    def check_kpp(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 9:
                 raise ValueError("kpp должен быть int с 9 цифрами")
-        self._kpp = value
+        return value
     
-    @property
-    def bik(self) -> int:
-        return self._bik
-
-    @bik.setter
-    def bik(self, value: Optional[int]):
+    def check_bik(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 9:
                 raise ValueError("bik должен быть int с 9 цифрами")
-        self._bik = value
+        return value
 
-    @property
-    def correspondent_account(self) -> int:
-        return self._correspondent_account
-
-    @correspondent_account.setter
-    def correspondent_account(self, value: Optional[int]):
+    def check_correspondent_account(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 20:
                 raise ValueError("correspondent_account должен быть int с 20 цифрами")
-        self._correspondent_account = value
+        return value
 
-    @property
-    def payment_account(self) -> int:
-        return self._payment_account
-
-    @payment_account.setter
-    def payment_account(self, value: Optional[int]):
+    def check_payment_account(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 20:
                 raise ValueError("payment_account должен быть int с 20 цифрами")
-        self._payment_account = value
+        return value
 
-    @property
-    def contact_number(self) -> str:
-        return self._contact_number
-
-    @contact_number.setter
-    def contact_number(self, value: Optional[str]):
+    def check_contact_number(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError('contact_number должен быть str')
-        self._contact_number = value
+        return value
     
     
     def to_dict(self) -> dict:
@@ -378,7 +281,7 @@ class User(BaseUsers):
             raise ValueError(f"Неожиданная ошибка: {e}")
         
     def print_profile(self) -> str:
-        if self.user_type == 'ind':
+        if self.user_type == 'org':
             return (
                 f"Тип пользователя: {self.user_type}\n"
                 f"Имя пользователя: {self.username}\n"

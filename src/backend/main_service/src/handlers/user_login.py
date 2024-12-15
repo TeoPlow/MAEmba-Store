@@ -29,10 +29,10 @@ def user_login_handler(data: dict[str, Any]) -> UUID | SpecialException:
         result = response.json()
         
         if result.get("status") == "success" and "token" in result:
-            log.debug(f"Возвращаю {result["token"]}")
+            log.debug(f"Возвращаю ТОКЕН: {result["token"]}")
             return result["token"]
         else:
-            raise SpecialException("Неизвестная ошибка")
+            raise SpecialException(f"Неизвестная ошибка {result}")
     
     except RequestException as e:
         raise SpecialException(f"Ошибка при отправке запроса: {e}")

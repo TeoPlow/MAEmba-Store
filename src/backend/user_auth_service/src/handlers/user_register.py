@@ -41,11 +41,13 @@ def user_register_handler(data: dict[str, Any], db = None) -> int | SpecialExcep
         token = AuthToken(
             token=str(uuid4()),
             entity_id=user.id,
-            expires_at=datetime.now() + timedelta(days=30),  # Срок действия 30 дней
+            expires_at=datetime.now() + timedelta(days=1),  # Срок действия - 1 день
         )
+        log.debug(f"Добавляю токен в БД")
         db.add(token)
         db.commit()
-        return str(user.id)
+
+        return user.id
 
     except IntegrityError as e:
         db.rollback()

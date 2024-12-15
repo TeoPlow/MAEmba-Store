@@ -9,7 +9,7 @@ from src.core.exceptions import SpecialException
 from src.core.logging import log
 
 
-def user_login_handler(data: dict[str, Any]) -> tuple | SpecialException:
+def user_login_handler(data: dict[str, Any], db = None) -> tuple | SpecialException:
     """
     Выполняет авторизацию пользователя, проверяя наличие вводимых данных в 
     auth_database и устанавливая токен в куку для сохранения авторизации.
@@ -41,7 +41,7 @@ def user_login_handler(data: dict[str, Any]) -> tuple | SpecialException:
         if not user:
             raise SpecialException("Пользователь с указанным email или именем не найден.")
 
-        if not user.verify_password(password):
+        if not user.check_password(password):
             raise SpecialException("Неверный пароль.")
 
         # Создание токена авторизации
