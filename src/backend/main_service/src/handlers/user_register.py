@@ -1,10 +1,13 @@
-from typing import Any
 import requests
 from requests.exceptions import RequestException
+
+from typing import Any
+
 from src.schemas.User import User
 from src.core.exceptions import SpecialException
 from src.core.config import USER_API_URL
 from src.core.logging import log
+
 
 def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
     """

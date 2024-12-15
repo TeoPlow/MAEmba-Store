@@ -1,18 +1,24 @@
-from typing import Any
 import requests
 from requests.exceptions import RequestException
-from src.schemas.User import User
+
+from typing import Any
 from uuid import UUID
+
+from src.schemas.User import User
 from src.core.exceptions import SpecialException
 from src.core.config import USER_API_URL
 from src.core.logging import log
 
-def put_user_info_handler(user_id: UUID, data: dict[str, Any]) -> dict:
+
+def put_user_info_handler(user_id: UUID, data: dict[str, Any]) -> dict | SpecialException:
     """
     Отправляет запрос к API об изменении информации об аккаунте в user_database.
         Параметры:
             data: Словарь в формате response.json с инфой:
                 Только изменяемые данные из class User
+        
+        Возвращает:
+            Словарик с результатом, либо SpecialException.
     """
     log.debug("Изменяю информацию о пользователе пользователя")
     url = USER_API_URL + f"/{user_id}"
