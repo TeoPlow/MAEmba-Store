@@ -9,4 +9,4 @@ ITEMS_API_URL = os.getenv("ITEMS_API_URL")
 CART_API_URL = os.getenv("CART_API_URL")
 ORDER_API_URL = os.getenv("ORDER_API_URL")
 
-LOG_LEVEL = os.getenv("LOG_LEVEL")
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")

@@ -2,6 +2,7 @@ from typing import Any
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timedelta
 from uuid import uuid4
+
 from src.db.database import get_db_users
 from src.models.User import User
 from src.models.Auth import AuthToken

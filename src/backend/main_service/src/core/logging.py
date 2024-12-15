@@ -1,8 +1,9 @@
 import sys
-from src.core.config import LOG_LEVEL
-from colorama import Fore, Style
 import logging
 import logging.config
+from colorama import Fore, Style
+
+from src.core.config import LOG_LEVEL
 
 log = logging.getLogger('main_service')
 
@@ -35,19 +36,19 @@ logger_config = {
     "handlers": {
         "screen_handler": {
             "class": "logging.StreamHandler",
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "formatter": "base",
             "stream": sys.stdout
         },
     },
     "loggers": {
         'main_service': {
-            'level': "DEBUG",
+            'level': LOG_LEVEL,
             'handlers': ["screen_handler"],
             'propagate': False
         },
         'user_auth_service': {
-            'level': "DEBUG",
+            'level': LOG_LEVEL,
             'handlers': ["screen_handler"],
             'propagate': False
         },

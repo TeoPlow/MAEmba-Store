@@ -1,9 +1,11 @@
 from typing import Any
+from uuid import UUID
+
 from src.models.User import User
 from src.db.database import get_db_users
 from src.core.exceptions import SpecialException
 from src.core.logging import log
-from uuid import UUID
+
 
 def get_user_info_handler(user_id: UUID, db = None) -> dict[str, Any] | SpecialException:
     """

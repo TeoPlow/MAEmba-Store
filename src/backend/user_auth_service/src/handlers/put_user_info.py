@@ -1,10 +1,12 @@
 from typing import Any
+from uuid import UUID
+from sqlalchemy.exc import IntegrityError
+
 from src.db.database import get_db_users
 from src.models.User import User
-from uuid import UUID
 from src.core.exceptions import SpecialException
-from sqlalchemy.exc import IntegrityError
 from src.core.logging import log
+
 
 def put_user_info_handler(user_id: UUID, data: dict[str, Any], db = None):
     """

@@ -2,6 +2,7 @@ from typing import Any, Dict, Optional
 from pydantic import EmailStr
 from datetime import date, datetime
 from passlib.hash import pbkdf2_sha256
+
 from src.core.logging import log
 
 
