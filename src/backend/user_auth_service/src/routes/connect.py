@@ -24,7 +24,8 @@ async def get_user_info(user_id: UUID, request: Request):
 async def put_user_info(user_id: UUID, request: Request):
     log.debug("Добавляю информацию о пользователе")
     try:
-        put_user_info_handler(user_id)
+        data = await request.json()
+        put_user_info_handler(user_id, data)
         return {"status": "success"}
     except SpecialException as e:
         log.warning(e)

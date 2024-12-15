@@ -96,10 +96,6 @@ class User(BaseUsers):
         log.debug(f"Пароль проверен у {self.email}: {'success' if result else 'failure'}")
         return result
     
-    @property
-    def password(self) -> str:
-        return self.password_hash
-    
     def update_password(self, old_password: str, new_password: str) -> None:
         if not self.check_password(old_password):
             log.warning(f"Ошибка при смене пароля у {self.email}: Неверный старый пароль")

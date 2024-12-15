@@ -1,11 +1,12 @@
 from typing import Any
 from src.db.database import get_db_users
 from src.models.User import User
+from uuid import UUID
 from src.core.exceptions import SpecialException
 from sqlalchemy.exc import IntegrityError
 from src.core.logging import log
 
-def put_user_info_handler(data: dict[str, Any]):
+def put_user_info_handler(user_id: UUID, data: dict[str, Any], db = None):
     """
     Обновляет информацию о пользователе в user_database.
         Параметры:
@@ -17,7 +18,6 @@ def put_user_info_handler(data: dict[str, Any]):
         db = next(get_db_users())
 
     try:
-        user_id = data.get("id")
         email = data.get("email")
 
         if not user_id and not email:

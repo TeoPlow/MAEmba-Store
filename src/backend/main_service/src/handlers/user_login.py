@@ -20,6 +20,7 @@ def user_login_handler(data: dict[str, Any]) -> UUID | SpecialException:
         Возвращает:
             Токен авторизации, либо SpecialException.
     """
+    log.debug("Авторизую пользователя")
     url = USER_API_URL + "/auth/login/"
     headers = {"Content-Type": "application/json"}
     

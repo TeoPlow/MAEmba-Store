@@ -6,9 +6,9 @@ from src.core.exceptions import SpecialException
 from src.core.config import USER_API_URL
 from src.core.logging import log
 
-def individual_register_handler(data: dict[str, Any]) -> int | SpecialException:
+def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
     """
-    Отправляет запрос к API об регистрации ФИЗ.ЛИЦа, добавляя его данные в auth_database.
+    Отправляет запрос к API об регистрации аккаунта, добавляя его данные в auth_database.
         Параметры:
             data: Словарь в формате response.json с инфой:
                 Всё из class User
@@ -16,7 +16,7 @@ def individual_register_handler(data: dict[str, Any]) -> int | SpecialException:
         Возвращает:
             ID зарегистрированного пользователя, либо SpecialException.
     """
-    log.debug("Регистрирую обычного пользователя")
+    log.debug("Регистрирую пользователя")
     url = USER_API_URL + "auth/register/"
     headers = {"Content-Type": "application/json"}
     
