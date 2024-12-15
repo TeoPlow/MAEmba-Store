@@ -34,8 +34,8 @@ def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
         
         log.debug(f"Получил в POST запросе {result}")
         if result['status'] == "success":
-            log.debug(f"Возвращаю ID пользователя: {result["data"]}")
-            return result["data"]
+            log.debug(f"Возвращаю ID пользователя: {result["user_id"]}")
+            return result["user_id"]
         else:
             raise SpecialException(f"Что-то случилось в USER API {result}")
     
