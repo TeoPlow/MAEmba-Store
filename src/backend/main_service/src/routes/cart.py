@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Request
-import logging
-import logging.config
-from core.logging import log
+from src.core.logging import log
 
 router = APIRouter()
 

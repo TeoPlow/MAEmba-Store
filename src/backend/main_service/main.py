@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import user, model, items, cart, order
+from src.routes import user, model, items, cart, order
 
 app = FastAPI()
 

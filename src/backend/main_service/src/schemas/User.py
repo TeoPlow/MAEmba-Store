@@ -1,31 +1,37 @@
 from typing import Any, Dict, Optional
+from pydantic import EmailStr
 from datetime import date, datetime
+from passlib.hash import pbkdf2_sha256
+from src.core.logging import log
 
 
-class User:
+class User():
     """
     Хранит в себе объект "Пользователя" который сразу может быть или Физ.Лицом или Юр.Лицом.
-    """ 
+    """
     def __init__(self,
                 user_type: str, # 'org' или 'ind'
                 username: str,
-                email: str,
-                company_name: Optional[str],
-                company_type: Optional[str], # Тип компании - ИП, ООО, АО, ЗАО
-                director_name: Optional[str], # ФИО директора
-                registration_date: Optional[date], # Дата регистрации - "YYYY-MM-DD"
-                legal_address: Optional[str], # Юридический адрес
-                physical_address: Optional[str],
-                inn: Optional[int], # 10 или 12 цифр
-                ogrn: Optional[int], # 13 цифр
-                kpp: Optional[int], # 9 цифр
-                bik: Optional[int], # 9 цифр
-                correspondent_account: Optional[int], # Корреспонденсткий счёт - 20 цифр 
-                payment_account: Optional[int], # Расчётный счёт - 20 цифр
-                contact_number: Optional[str]):
+                password: str,
+                email: EmailStr,
+                contact_number: Optional[str],
+                company_name: Optional[str]=None,
+                company_type: Optional[str]=None, # Тип компании - ИП, ООО, АО, ЗАО
+                director_name: Optional[str]=None, # ФИО директора
+                registration_date: Optional[date]=None, # Дата регистрации - "YYYY-MM-DD"
+                legal_address: Optional[str]=None, # Юридический адрес
+                physical_address: Optional[str]=None,
+                inn: Optional[int]=None, # 10 или 12 цифр
+                ogrn: Optional[int]=None, # 13 цифр
+                kpp: Optional[int]=None, # 9 цифр
+                bik: Optional[int]=None, # 9 цифр
+                correspondent_account: Optional[int]=None, # Корреспонденсткий счёт - 20 цифр 
+                payment_account: Optional[int]=None # Расчётный счёт - 20 цифр
+                ):
         self.__user_type = user_type
         self.__username = username
         self.__email = email
+        self.__password_hash = pbkdf2_sha256.hash(password)
         self.__company_name = company_name
         self.__company_type = company_type
         self.__director_name = director_name
@@ -39,6 +45,24 @@ class User:
         self.__correspondent_account = correspondent_account
         self.__payment_account = payment_account
         self.__contact_number = contact_number
+        
+    
+    def check_password(self, password: str) -> bool:
+        result = pbkdf2_sha256.verify(password, self.__password_hash)
+        log.debug(f"Пароль проверен у {self.__email}: {'success' if result else 'failure'}")
+        return result
+    
+    @property
+    def password(self) -> str:
+        return self.__password_hash
+    
+    @password.setter
+    def password(self, old_password: str, new_password: str) -> None:
+        if not self.check_password(old_password):
+            log.warning(f"Ошибка при смене пароля у {self.__email}: Неверный старый пароль")
+            raise ValueError("Старый пароль не верен")
+        self.__password_hash = pbkdf2_sha256.hash(new_password)
+        log.info(f"Пароль успешно сменён для {self.__email}")
 
     @property
     def user_type(self) -> str:
@@ -46,7 +70,7 @@ class User:
     
     @user_type.setter
     def user_type(self, value: str):
-        if (value != "org") or (value != "ind"):
+        if (value != "org") and (value != "ind"):
             raise ValueError("Тип пользователя должно быть 'org' или 'ind'")
         self.__user_type = value
     
@@ -204,6 +228,8 @@ class User:
                 raise ValueError(f"Не похож на номер телефон элемент {number}")
         self.__contact_number = value
     
+    
+    @classmethod
     def validate_data(cls, data: Dict[str, Any]) -> "User":
         """
         Проверяет, соответствует ли словарь data требованиям класса.
@@ -219,6 +245,7 @@ class User:
                 return cls(
                     user_type=data["user_type"],
                     username=data["username"],
+                    password=data["password"],
                     email=data["email"],
                     contact_number=data["contact_number"]
                 )
@@ -226,7 +253,9 @@ class User:
                 return cls(
                     user_type=data["user_type"],
                     username=data["username"],
+                    password=data["password"],
                     email=data["email"],
+                    contact_number=data["contact_number"],
                     company_name=data["company_name"],
                     company_type=data["company_type"],
                     director_name=data["director_name"],
@@ -238,8 +267,7 @@ class User:
                     kpp=int(data["kpp"]),
                     bik=int(data["bik"]),
                     correspondent_account=int(data["correspondent_account"]),
-                    payment_account=int(data["payment_account"]),
-                    contact_number=data["contact_number"]
+                    payment_account=int(data["payment_account"])
                 )
         except KeyError as e:
             raise ValueError(f"Отсутствует обязательное поле: {e}")
@@ -248,23 +276,13 @@ class User:
         except Exception as e:
             raise ValueError(f"Неожиданная ошибка: {e}")
         
-    def to_dict(self) -> dict:
-        return {
-            "id": str(self.id),
-            "email": self.email,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "phone_number": self.phone_number,
-            "user_role": self.user_role.value,
-            "created": self.created.isoformat(),
-            "updated": self.updated.isoformat(),
-        }
-    
     def print_profile(self) -> str:
-        if self.__user_type == 'ind':
+        if self.user_type == 'ind':
             return (
                 f"Тип пользователя: {self.__user_type}\n"
                 f"Имя пользователя: {self.__username}\n"
+                f"Контактный номер: {self.__contact_number}\n"
+                f"Email: {self.__email}\n"
                 f"Название компании: {self.__company_name}\n"
                 f"Тип компании: {self.__company_type}\n"
                 f"ФИО директора: {self.__director_name}\n"
@@ -277,8 +295,6 @@ class User:
                 f"БИК: {self.__bik}\n"
                 f"Корреспонденсткий счёт: {self.__correspondent_account}\n"
                 f"Расчётный счёт: {self.__payment_account}\n"
-                f"Email: {self.__email}\n"
-                f"Контактный номер: {self.__contact_number}"
             )
         else:
             return (

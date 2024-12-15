@@ -1,5 +1,5 @@
 import sys
-from core.config import LOG_LEVEL
+from src.core.config import LOG_LEVEL
 from colorama import Fore, Style
 import logging
 import logging.config

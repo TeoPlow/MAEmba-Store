@@ -1,5 +1,5 @@
 from functools import wraps
-from core.logging import log
+from src.core.logging import log
 
 def login_required(f):
     @wraps(f)

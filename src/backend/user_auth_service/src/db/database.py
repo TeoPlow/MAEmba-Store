@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from src.core.logging import log
 
 from src.core.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 
@@ -16,6 +17,7 @@ SessionLocalUsers = sessionmaker(autocommit=False, autoflush=False, bind=engine_
 def get_db_users():
     db = SessionLocalUsers()
     try:
+        log.debug("Совершаю запрос к БД")
         yield db
     finally:
         db.close()

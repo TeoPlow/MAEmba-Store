@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Request
 from uuid import UUID
-from core.exceptions import SpecialException
-from core.auth import login_required
-from core.logging import log
-from handlers.individual_info_changed import individual_info_changed_handler
-from handlers.individual_register import individual_register_handler
-from handlers.organization_info_changed import organization_info_changed_handler
-from handlers.organization_register import organization_register_handler
-from handlers.user_login import user_login_handler
-from handlers.get_user_info import get_user_info_handler
-from handlers.put_user_info import put_user_info_handler
+from src.core.exceptions import SpecialException
+from src.core.auth import login_required
+from src.core.logging import log
+from src.handlers.individual_info_changed import individual_info_changed_handler
+from src.handlers.individual_register import individual_register_handler
+from src.handlers.organization_info_changed import organization_info_changed_handler
+from src.handlers.organization_register import organization_register_handler
+from src.handlers.user_login import user_login_handler
+from src.handlers.get_user_info import get_user_info_handler
 
 router = APIRouter()
 
@@ -76,8 +75,8 @@ async def login(request: Request):
     log.debug("Авторизую уже существующего пользователя")
     try:
         data = await request.json()
-        is_user_logged: bool = user_login_handler(data)
-        return {"status": "success", "data": is_user_logged}
+        token: UUID = user_login_handler(data)
+        return {"status": "success", "data": token}
     except SpecialException as e: 
         log.warning(e)
         return {"status": "warning", "message": str(e)}

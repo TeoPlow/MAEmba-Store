@@ -1,0 +1,1 @@
+curl -X POST -H "Content-Type: application/json" -d '{"user_type": "ind", "username": "egor228", "password": "password", "email": "citymodz@yandex.com", "contact_number": "+79853553825"}' http://0.0.0.0:8000/user/auth/register

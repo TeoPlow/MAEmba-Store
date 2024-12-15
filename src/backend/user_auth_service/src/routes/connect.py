@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request
 from uuid import UUID
-from core.exceptions import SpecialException
-from core.logging import log
-from handlers.get_user_info import get_user_info_handler
-from handlers.put_user_info import put_user_info_handler
+from src.core.exceptions import SpecialException
+from src.core.logging import log
+from src.handlers.get_user_info import get_user_info_handler
+from src.handlers.put_user_info import put_user_info_handler
 
 router = APIRouter()
 

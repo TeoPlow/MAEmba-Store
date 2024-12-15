@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import auth, connect
+from src.routes import auth, connect
 
 app = FastAPI()
 

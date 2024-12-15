@@ -4,6 +4,8 @@ from fastapi.security import OAuth2PasswordBearer
 
 load_dotenv()
 
+LOG_LEVEL = os.getenv("LOG_LEVEL")
+
 DB_HOST = os.environ.get("DB_HOST")
 DB_PORT = os.environ.get("DB_PORT")
 DB_NAME = os.environ.get("DB_NAME")

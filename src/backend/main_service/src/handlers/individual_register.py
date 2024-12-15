@@ -1,10 +1,10 @@
 from typing import Any
 import requests
 from requests.exceptions import RequestException
-from schemas.User import User
-from core.exceptions import SpecialException
-from core.config import USER_API_URL
-from core.logging import log
+from src.schemas.User import User
+from src.core.exceptions import SpecialException
+from src.core.config import USER_API_URL
+from src.core.logging import log
 
 def individual_register_handler(data: dict[str, Any]) -> int | SpecialException:
     """
@@ -16,13 +16,15 @@ def individual_register_handler(data: dict[str, Any]) -> int | SpecialException:
         Возвращает:
             ID зарегистрированного пользователя, либо SpecialException.
     """
+    log.debug("Регистрирую обычного пользователя")
     url = USER_API_URL + "auth/register/"
     headers = {"Content-Type": "application/json"}
     
     try:
         if data["user_type"] == 'ind':
+            log.debug(f"Получил data: {data}")
             data_check = User.validate_data(data)
-            log.debug(f"Получил верные данные: {data_check.print_profile}")
+            log.debug(f"Получил верные данные: \n{data_check.print_profile()}")
         else:
             raise SpecialException("Переданы данные НЕ пользователя")
 
