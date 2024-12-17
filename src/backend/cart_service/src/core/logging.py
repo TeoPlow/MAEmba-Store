@@ -5,7 +5,7 @@ from colorama import Fore, Style
 
 from src.core.config import LOG_LEVEL
 
-log = logging.getLogger('main_service')
+log = logging.getLogger('cart_service')
 
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):
@@ -42,12 +42,7 @@ logger_config = {
         },
     },
     "loggers": {
-        'main_service': {
-            'level': LOG_LEVEL,
-            'handlers': ["screen_handler"],
-            'propagate': False
-        },
-        'user_auth_service': {
+        'cart_service': {
             'level': LOG_LEVEL,
             'handlers': ["screen_handler"],
             'propagate': False

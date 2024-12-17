@@ -42,16 +42,11 @@ logger_config = {
         },
     },
     "loggers": {
-        'main_service': {
-            'level': LOG_LEVEL,
-            'handlers': ["screen_handler"],
-            'propagate': False
-        },
         'user_auth_service': {
             'level': LOG_LEVEL,
             'handlers': ["screen_handler"],
             'propagate': False
-        },
+        }
     }
 }
 logging.config.dictConfig(logger_config)
