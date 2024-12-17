@@ -1,4 +1,5 @@
 import requests
+from fastapi import Response
 from requests.exceptions import RequestException
 
 from typing import Any
@@ -9,7 +10,13 @@ from src.core.config import USER_API_URL
 from src.core.logging import log
 
 
-def user_login_handler(data: dict[str, Any]) -> UUID | SpecialException:
+def set_cookie(response: Response, name: str, value: str, max_age: int):
+    log.debug("Устанавливаю куку")
+    # httponly=True, secure=True отвечают за безопасность
+    response.set_cookie(key=name, value=value, max_age=max_age, httponly=True, secure=True)
+    
+
+def user_login_handler(data: dict[str, Any]):
     """
     Выполняет авторизацию пользователя, проверяя наличие вводимых данных в 
     auth_database и устанавливая токен в куку для сохранения авторизации.
@@ -18,9 +25,6 @@ def user_login_handler(data: dict[str, Any]) -> UUID | SpecialException:
                   email_or_name: (str)
                   password: (str)
                   remember_me: (bool)
-
-        Возвращает:
-            Токен авторизации, либо SpecialException.
     """
     log.debug("Авторизую пользователя")
     url = USER_API_URL + "/auth/login/"
@@ -32,8 +36,11 @@ def user_login_handler(data: dict[str, Any]) -> UUID | SpecialException:
         result = response.json()
         
         if result.get("status") == "success" and "token" in result:
-            log.debug(f"Возвращаю ТОКЕН: {result["token"]}")
-            return result["token"]
+            token, token_expiry = result["token"], result["token-expiry"]
+
+            set_cookie(response, "auth_token", token, max_age=token_expiry.total_seconds())
+            log.debug(f"Установил ТОКЕН в куку: {token} на время {token_expiry}")
+
         else:
             raise SpecialException(f"Неизвестная ошибка {result}")
     

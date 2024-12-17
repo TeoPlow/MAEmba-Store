@@ -30,6 +30,8 @@ def get_user_info_handler(user_id: UUID) -> dict[str, Any] | SpecialException:
         if result["status"] == "success":
             log.debug(f"Возвращаю инфу о {result["data"]["email"]}")
             return result["data"]
+        if result["status"] == "warning":
+            return result["message"]
         else:
             raise SpecialException("Передача прошла не успешно")
     
