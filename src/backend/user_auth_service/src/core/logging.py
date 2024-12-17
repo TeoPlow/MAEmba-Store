@@ -5,7 +5,7 @@ from colorama import Fore, Style
 
 from src.core.config import LOG_LEVEL
 
-log = logging.getLogger('main_service')
+log = logging.getLogger('user_auth_service')
 
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):

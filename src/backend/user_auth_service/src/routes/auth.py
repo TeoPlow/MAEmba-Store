@@ -1,17 +1,11 @@
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request
 from uuid import UUID
 
-from src.core.exceptions import SpecialException
 from src.core.logging import log
 from src.handlers.user_register import user_register_handler
 from src.handlers.user_login import user_login_handler
 
 router = APIRouter()
-
-def set_cookie(response: Response, name: str, value: str, max_age: int):
-    log.debug("Устанавливаю куку")
-    # httponly=True, secure=True отвечают за безопасность
-    response.set_cookie(key=name, value=value, max_age=max_age, httponly=True, secure=True)
 
 @router.post("/register")
 async def register(request: Request):
@@ -32,23 +26,15 @@ async def register(request: Request):
         Возвращает:
             UUID зарегестрированного пользователя
             Пример:
-            {"status": "success", "user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}
+            {"status": "success", "data": {"user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}}
     """
     log.debug("Регистрирую пользователя")
-    try:
-        data = await request.json()
-        registered_user_id: UUID = user_register_handler(data)
-        log.debug(f"Регистрация успешно окончена")
-        return {"status": "success", "user_id": registered_user_id}
-    except SpecialException as e:
-        log.warning(e)
-        return {"status": "warning", "message": str(e)}
-    except Exception as e:
-        log.error(f'Ошибка: {e}')
-        return {"status": "error", "message": str(e)}
+    data = await request.json()
+    registered_user_id: UUID = user_register_handler(data)
+    return {"status": "success", "data": {"user_id": registered_user_id}}
     
 @router.post("/login")
-async def login(request: Request, response: Response):
+async def login(request: Request):
     """
     Эндпоинт авторизации пользователя.
         На вход:
@@ -64,17 +50,10 @@ async def login(request: Request, response: Response):
         Возвращает:
             UUID Токен авторизации по ключу "token"
             Пример:
-            {"status": "success", "token": eeee1234-76a9-4509-87f0-e1b12354d92b}
+            {"status": "success", "data": {"token": eeee1234-76a9-4509-87f0-e1b12354d92b, "token-expiry": datetime.timedelta}}
     """
     log.debug("Авторизую пользователя")
-    try:
-        data = await request.json()
-        token, token_expiry = user_login_handler(data)
-        set_cookie(response, "auth_token", token, max_age=token_expiry.total_seconds())
-        return {"status": "success", "token": token}
-    except SpecialException as e:
-        log.warning(e)
-        return {"status": "warning", "message": str(e)}
-    except Exception as e:
-        log.error(f'Ошибка: {e}')
-        return {"status": "error", "message": str(e)}
+    data = await request.json()
+    token, token_expiry = user_login_handler(data)
+    return {"status": "success", "data": {"token": token, "token-expiry": token_expiry}}
+
