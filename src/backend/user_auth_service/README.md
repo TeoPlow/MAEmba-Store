@@ -60,7 +60,7 @@
 
     Запрос:
 
-        POST http://0.0.0.0:8001/register
+        POST http://0.0.0.0:8001/auth/register
 
     ```json
     {
@@ -92,7 +92,7 @@
 
     Запрос:
 
-        POST http://0.0.0.0:8001/login
+        POST http://0.0.0.0:8001/auth/login
 
     ```json
     {
