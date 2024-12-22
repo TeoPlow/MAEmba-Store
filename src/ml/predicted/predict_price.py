@@ -5,6 +5,26 @@ from statsmodels.tsa.arima.model import ARIMA
 from datetime import datetime
 from statsmodels.tsa.stattools import adfuller
 
+def read_data() -> pd.DataFrame:
+  """
+  Возвращает данные для прогноза
+  """
+  sales_train = pd.read_csv("sales_train.csv")
+  
+  sales_train = sales_train[sales_train['item_price'] > 0]
+  sales_train = sales_train[sales_train['item_cnt_day'] > 0]
+  
+  # Преобразуем колонку date в тип datetime
+  sales_train['date'] = pd.to_datetime(sales_train['date'],format = "%d.%m.%Y")
+  
+  # Сортируем данные по дате и item_id
+  sales_train = sales_train.sort_values(by=['item_id', 'date'])
+  
+  # Группируем данные по item_id и дате, чтобы получить среднюю цену за день
+  sales_train_grouped = sales_train.groupby(['item_id', 'date']).agg({'item_price': 'median'}).reset_index()
+  
+  return sales_train_grouped
+
 def test_stationarity(series:pd.Series) -> int:
   """
   Проверяет ряд на стационарность
@@ -42,6 +62,8 @@ def forecast_price1(item_id:int) -> float:
   :param item_id: Идентификатор товара
   :return: Предсказанную цену товара
   """
+  
+  sales_train_grouped = read_data()
   # Дата на которую нужно предсказание (текущий день)
   forecast_date = datetime.today().strftime('%Y-%m-%d')
   
