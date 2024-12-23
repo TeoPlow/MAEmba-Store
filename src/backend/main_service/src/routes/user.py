@@ -4,10 +4,14 @@ from uuid import UUID
 from src.core.exceptions import SpecialException
 from src.core.logging import log
 
-from src.handlers.user_register import user_register_handler
-from src.handlers.user_login import user_login_handler
-from src.handlers.get_user_info import get_user_info_handler
-from src.handlers.put_user_info import put_user_info_handler
+from src.handlers.user_service import (
+    user_register_handler,
+    user_login_handler,
+    get_user_info_handler,
+    put_user_info_handler,
+    # validate_auth_handler,
+)
+
 
 router = APIRouter()
 
@@ -30,13 +34,13 @@ async def register(request: Request):
         Возвращает:
             UUID зарегестрированного пользователя
             Пример:
-            {"status": "success", "user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}
+            {"status": "success", "data": {"user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}}
     """
     log.debug("Регистрирую пользователя")
     try:
         data = await request.json()
         registered_user_id: UUID = user_register_handler(data)
-        return {"status": "success", "user_id": registered_user_id}
+        return {"status": "success", "data": {"user_id": registered_user_id}}
     except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}
@@ -44,6 +48,7 @@ async def register(request: Request):
         log.error(f'Ошибка: {e}')
         return {"status": "error", "message": str(e)}
     
+
 @router.post("/auth/login")
 async def login(request: Request):
     """
@@ -75,9 +80,23 @@ async def login(request: Request):
         log.error(f'Ошибка: {e}')
         return {"status": "error", "message": str(e)}
 
+
 @router.post("/auth/validate-token")
 async def validate_token(request: Request):
-    pass
+    """
+    """
+    # log.debug("Провожу валидацию")
+    # try:
+    #     data = await request.json()
+    #     result: dict = validate_auth_handler(data)
+    #     return {"status": "success", "data": result}
+    # except SpecialException as e: 
+    #     log.warning(e)
+    #     return {"status": "warning", "message": str(e)}
+    # except Exception as e:
+    #     log.error(f'Ошибка: {e}')
+    #     return {"status": "error", "message": str(e)}
+
 
 @router.get("/{user_id}")
 async def get_user_info(user_id: UUID):
@@ -115,6 +134,7 @@ async def get_user_info(user_id: UUID):
     except Exception as e:
         log.error(f'Ошибка: {e}')
         return {"status": "error", "message": str(e)}
+
 
 @router.put("/{user_id}")
 async def put_user_info(user_id: UUID, request: Request):

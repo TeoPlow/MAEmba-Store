@@ -2,7 +2,6 @@ from fastapi import APIRouter, Request
 from uuid import UUID
 
 from src.core.logging import log
-from src.core.auth_check import login_required, same_user_required
 from src.handlers.get_user_info import get_user_info_handler
 from src.handlers.put_user_info import put_user_info_handler
 
@@ -10,8 +9,6 @@ router = APIRouter()
 
 
 @router.get("/{user_id}")
-@login_required
-@same_user_required
 async def get_user_info(request: Request, user_id: UUID) -> dict:
     """
     Эндпоинт получения информации о пользователе по его ID.
@@ -43,8 +40,6 @@ async def get_user_info(request: Request, user_id: UUID) -> dict:
 
 
 @router.put("/{user_id}")
-@login_required
-@same_user_required
 async def put_user_info(request: Request, user_id: UUID) -> dict:
     """
     Эндпоинт изменения информации о пользователе по его ID.

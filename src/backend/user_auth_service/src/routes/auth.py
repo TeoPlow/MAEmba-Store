@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Request
 from uuid import UUID
 
-from src.core.logging import log
+from src.handlers.validate_auth import validate_auth_handler 
 from src.handlers.user_register import user_register_handler
 from src.handlers.user_login import user_login_handler
+from src.core.logging import log
 
 router = APIRouter()
 
@@ -56,4 +57,19 @@ async def login(request: Request):
     data = await request.json()
     token, token_expiry = user_login_handler(data)
     return {"status": "success", "data": {"token": token, "token-expiry": token_expiry}}
+
+@router.post("/validate-auth")
+async def validate_auth(request: Request):
+    """
+    """
+    log.debug("Проверяю, аутентифицирован ли пользователь")
+    try:
+        data = await request.json()
+        if validate_auth_handler(data):
+            return {"status": "success"}
+        else:
+            return {"status": "warning", "message": "Пользователь не аутентифицирован"}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
 

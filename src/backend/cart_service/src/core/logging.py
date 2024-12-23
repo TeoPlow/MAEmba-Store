@@ -7,6 +7,7 @@ from src.core.config import LOG_LEVEL
 
 log = logging.getLogger('cart_service')
 
+
 # Логгер и его форматеры
 class ColorFormatter(logging.Formatter):
     COLORS = {

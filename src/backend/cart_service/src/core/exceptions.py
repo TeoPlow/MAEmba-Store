@@ -1,6 +1,7 @@
 from fastapi.responses import JSONResponse
 from src.core.logging import log
 
+
 # Класс для ловли исключений
 class SpecialException(Exception):
     def __init__(self, message: str):
