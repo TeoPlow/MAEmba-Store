@@ -1,17 +1,26 @@
-fastapi
+# Основные зависимости
+fastapi                 # Веб-фреймворк для создания API
 kafka-python
-sqlalchemy
-alembic
-psycopg2-binary  # Для работы с PostgreSQL в SQLAlchemy
-yookassa  # Официальная библиотека для Yoomoney в Python
-oauthlib
-pyjwt
-uvicorn
-colorama
 python-dotenv
 passlib
+uvicorn[standard]       # ASGI-сервер для FastAPI
+sqlalchemy              # ORM для работы с базой данных
+alembic                 # Инструмент миграции базы данных для SQLAlchemy
+psycopg2-binary         # Драйвер для работы с PostgreSQL
+pandas                  # Библиотека для анализа данных
+scikit-learn            # Библиотека для машинного обучения
+catboost                # Библиотека градиентного бустинга для ML
+jinja2
 
-# Библиотеки для ML
-# catboost
-# scikit-learn
-# pandas
+# Безопасность и авторизация
+oauthlib                # Библиотека для реализации OAuth
+PyJWT                   # JSON Web Tokens (JWT) для авторизации
+yoomoney                # SDK для интеграции Yoomoney
+yookassa  # Официальная библиотека для Yoomoney в Python
+
+# Инструменты разработки и тестирования
+pytest                  # Фреймворк для тестирования
+colorama                # Цветной логгер
+flake8                  # Линтер для проверки стиля кода
+bandit                  # Статический анализ безопасности для Python
+safety                  # Проверка уязвимостей в зависимостях
