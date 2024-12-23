@@ -11,7 +11,8 @@ from src.core.logging import log
 
 def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
     """
-    Отправляет запрос к API об регистрации аккаунта, добавляя его данные в auth_database.
+    Отправляет запрос к API об регистрации аккаунта,
+    добавляя его данные в auth_database.
         Параметры:
             data: Словарь в формате response.json с инфой:
                 Всё из class User
@@ -22,7 +23,7 @@ def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
     log.debug("Регистрирую пользователя")
     url = USER_API_URL + "auth/register/"
     headers = {"Content-Type": "application/json"}
-    
+
     try:
         if data["user_type"] == 'ind':
             log.debug(f"Получил data: {data}")
@@ -34,14 +35,14 @@ def user_register_handler(data: dict[str, Any]) -> int | SpecialException:
         response = requests.post(url, json=data, headers=headers)
         response.raise_for_status()
         result = response.json()
-        
+
         log.debug(f"Получил в POST запросе {result}")
         if result['status'] == "success":
             log.debug(f"Возвращаю ID пользователя: {result["user_id"]}")
             return result["user_id"]
         else:
             raise SpecialException(f"Что-то случилось в USER API {result}")
-    
+
     except RequestException as e:
         raise SpecialException(f"Ошибка при отправке запроса: {e}")
     except ValueError as e:
