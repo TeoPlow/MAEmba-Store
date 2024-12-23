@@ -15,6 +15,7 @@ from src.handlers.user_service import (
 
 router = APIRouter()
 
+
 @router.post("/auth/register")
 async def register(request: Request):
     """
@@ -24,17 +25,20 @@ async def register(request: Request):
             Пример:
                 "Content-Type: application/json"
                 {
-                "user_type": "ind", 
-                "username": "egor228", 
-                "password": "password", 
-                "email": "citymodz@yandex.com", 
+                "user_type": "ind",
+                "username": "egor228",
+                "password": "password",
+                "email": "citymodz@yandex.com",
                 "contact_number": "+79853553825"
                 }
 
         Возвращает:
             UUID зарегестрированного пользователя
             Пример:
-            {"status": "success", "data": {"user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}}
+            {
+            "status": "success",
+            "data": {"user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}
+            }
     """
     log.debug("Регистрирую пользователя")
     try:
@@ -47,14 +51,17 @@ async def register(request: Request):
     except Exception as e:
         log.error(f'Ошибка: {e}')
         return {"status": "error", "message": str(e)}
-    
+
 
 @router.post("/auth/login")
 async def login(request: Request):
     """
     Эндпоинт авторизации пользователя.
         На вход:
-            Cловарь из email_or_name: (str), password: (str), remember_me: (bool) в формате json.
+            Cловарь из email_or_name: (str),
+                       password: (str),
+                       remember_me: (bool)
+                       в формате json.
             Пример:
                 "Content-Type: application/json"
                 {
@@ -66,14 +73,17 @@ async def login(request: Request):
         Возвращает:
             UUID Токен авторизации по ключу "token"
             Пример:
-            {"status": "success", "token": eeee1234-76a9-4509-87f0-e1b12354d92b}
+            {
+            "status": "success",
+            "token": eeee1234-76a9-4509-87f0-e1b12354d92b
+            }
     """
     log.debug("Авторизую уже существующего пользователя")
     try:
         data = await request.json()
         user_login_handler(data)
         return {"status": "success"}
-    except SpecialException as e: 
+    except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}
     except Exception as e:
@@ -90,7 +100,7 @@ async def validate_token(request: Request):
     #     data = await request.json()
     #     result: dict = validate_auth_handler(data)
     #     return {"status": "success", "data": result}
-    # except SpecialException as e: 
+    # except SpecialException as e:
     #     log.warning(e)
     #     return {"status": "warning", "message": str(e)}
     # except Exception as e:
@@ -128,7 +138,7 @@ async def get_user_info(user_id: UUID):
     try:
         user_info: dict = get_user_info_handler(user_id)
         return {"status": "success", "data": user_info}
-    except SpecialException as e: 
+    except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}
     except Exception as e:
@@ -141,16 +151,17 @@ async def put_user_info(user_id: UUID, request: Request):
     """
     Эндпоинт изменения информации о пользователе по его ID.
         На вход:
-            Внутри эндпоинта '/user_id', а также словарь из class User в формате json.
+            Внутри эндпоинта '/user_id',
+            а также словарь из class User в формате json.
             Пример:
                 http://0.0.0.0:8000/user/e5f8433e-76a9-4509-87f0-e1b12354d92b
 
                 "Content-Type: application/json"
                 {
-                "user_type": "ind", 
-                "username": "new_egor228", 
-                "password": "new_password", 
-                "email": "new_citymodz@yandex.com", 
+                "user_type": "ind",
+                "username": "new_egor228",
+                "password": "new_password",
+                "email": "new_citymodz@yandex.com",
                 "contact_number": "+79000111222"
                 }'
 
@@ -175,12 +186,10 @@ async def put_user_info(user_id: UUID, request: Request):
     try:
         data = await request.json()
         result: dict = put_user_info_handler(user_id, data)
-        return {"status": "success"}
+        return {"status": "success", "data": result}
     except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}
     except Exception as e:
         log.error(f'Ошибка: {e}')
         return {"status": "error", "message": str(e)}
-
-

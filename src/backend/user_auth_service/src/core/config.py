@@ -20,6 +20,7 @@ ALGORITHM = os.environ.get("ALGORITHM")
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/mae/login") # Вот здесь нужно поменять на наш эндпоинт
+# Вот здесь нужно поменять на наш эндпоинт
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/mae/login")
 
-## Добавить SWAGGER_GROUPS для индексации
+# Добавить SWAGGER_GROUPS для индексации

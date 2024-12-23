@@ -7,8 +7,9 @@ from src.core.exceptions import special_exception_handler
 
 app = FastAPI()
 
-app.include_router(auth.router, prefix="/auth", tags=["Authentification and Registration"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth and Registration"])
 app.include_router(connect.router, prefix="", tags=["Get and Put User ID"])
+
 
 @app.get("/")
 async def root():

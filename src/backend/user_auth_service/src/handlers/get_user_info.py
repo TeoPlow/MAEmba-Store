@@ -7,12 +7,13 @@ from src.core.exceptions import SpecialException
 from src.core.logging import log
 
 
-def get_user_info_handler(user_id: UUID, db = None) -> dict[str, Any] | SpecialException:
+def get_user_info_handler(user_id: UUID,
+                          db=None) -> dict[str, Any] | SpecialException:
     """
     Получает информацию о пользователе из user_auth_database.
         Параметры:
             user_id: ID пользователя
-                
+
         Возвращает:
             Словарь с информацией о пользователе или SpecialException.
     """
@@ -22,10 +23,10 @@ def get_user_info_handler(user_id: UUID, db = None) -> dict[str, Any] | SpecialE
 
     try:
         user = db.query(User).filter(User.id == user_id).first()
-        
+
         if not user:
             raise SpecialException(f"Пользователь с ID {user_id} не найден.")
-        
+
         user_data = user.to_dict()
         return user_data
     finally:

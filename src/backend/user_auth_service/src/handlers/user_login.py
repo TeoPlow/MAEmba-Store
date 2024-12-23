@@ -10,9 +10,10 @@ from src.core.exceptions import SpecialException
 from src.core.logging import log
 
 
-def user_login_handler(data: dict[str, Any], db = None) -> tuple | SpecialException:
+def user_login_handler(data: dict[str, Any],
+                       db=None) -> tuple | SpecialException:
     """
-    Выполняет авторизацию пользователя, проверяя наличие вводимых данных в 
+    Выполняет авторизацию пользователя, проверяя наличие вводимых данных в
     auth_database и устанавливая токен в куку для сохранения авторизации.
         Параметры:
             data: Словарь в формате response.json с инфой:
@@ -33,20 +34,25 @@ def user_login_handler(data: dict[str, Any], db = None) -> tuple | SpecialExcept
         remember_me = data.get("remember_me", False)
 
         if not email_or_name or not password:
-            raise SpecialException("Необходимо указать email/имя и пароль для авторизации.")
+            raise SpecialException("Необходимо указать email/имя и пароль")
 
         user = db.query(User).filter(
             (User.email == email_or_name) | (User.username == email_or_name)
         ).first()
 
         if not user:
-            raise SpecialException("Пользователь с указанным email или именем не найден.")
+            raise SpecialException("""
+            Пользователь с указанным Email или именем не найден
+                                   """)
 
         if not user.check_password(password):
-            raise SpecialException("Неверный пароль.")
+            raise SpecialException("Неверный пароль")
 
         # Создание токена авторизации
-        token_expiry = timedelta(days=30) if remember_me else timedelta(hours=12)
+        token_expiry = (
+            timedelta(days=30) if remember_me else timedelta(hours=12)
+        )
+
         token = AuthToken(
             token=str(uuid4()),
             entity_id=user.id,
@@ -55,7 +61,7 @@ def user_login_handler(data: dict[str, Any], db = None) -> tuple | SpecialExcept
         db.add(token)
         db.commit()
 
-        log.info(f"Пользователь {user.id} успешно авторизован.")
+        log.info(f"Пользователь {user.id} успешно авторизован")
         return token.token, token_expiry
 
     except IntegrityError as e:

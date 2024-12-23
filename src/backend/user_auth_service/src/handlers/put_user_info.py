@@ -8,12 +8,12 @@ from src.core.exceptions import SpecialException
 from src.core.logging import log
 
 
-def put_user_info_handler(user_id: UUID, data: dict[str, Any], db = None):
+def put_user_info_handler(user_id: UUID, data: dict[str, Any], db=None):
     """
     Обновляет информацию о пользователе в user_database.
         Параметры:
             Словарь с информацией о пользователе.
-            
+
     """
     log.debug("Обновляю информацию о пользователе")
     if db is None:
@@ -23,16 +23,22 @@ def put_user_info_handler(user_id: UUID, data: dict[str, Any], db = None):
         email = data.get("email")
 
         if not user_id and not email:
-            raise SpecialException("Необходимо указать ID или email для идентификации пользователя.")
+            raise SpecialException("Необходимо указать ID или email")
 
         user = db.query(User).filter(
             (User.id == user_id) | (User.email == email)
         ).first()
 
         if not user:
-            raise SpecialException(f"Пользователь с ID {user_id} или email {email} не найден.")
+            raise SpecialException(f"""
+            Пользователь с ID {user_id} или Email {email} не найден.
+                                   """)
 
-        updated_fields = {key: value for key, value in data.items() if hasattr(User, key) and value is not None}
+        updated_fields = {
+            key: value
+            for key, value in data.items()
+            if hasattr(User, key) and value is not None
+        }
 
         for key, value in updated_fields.items():
             setattr(user, key, value)

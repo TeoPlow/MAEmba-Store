@@ -20,7 +20,8 @@ from src.core.logging import log
 
 class User(BaseUsers):
     """
-    Хранит в себе объект "Пользователя" который сразу может быть или Физ.Лицом или Юр.Лицом.
+    Хранит в себе объект "Пользователя",
+    который сразу может быть или Физ.Лицом или Юр.Лицом.
     """
     __tablename__ = "user"
 
@@ -53,24 +54,23 @@ class User(BaseUsers):
     )
 
     def __init__(self,
-                user_type: str, # 'org' или 'ind'
-                username: str,
-                password: str,
-                email: EmailStr,
-                contact_number: Optional[str],
-                company_name: Optional[str]=None,
-                company_type: Optional[str]=None, # Тип компании - ИП, ООО, АО, ЗАО
-                director_name: Optional[str]=None, # ФИО директора
-                registration_date: Optional[date]=None, # Дата регистрации - "YYYY-MM-DD"
-                legal_address: Optional[str]=None, # Юридический адрес
-                physical_address: Optional[str]=None,
-                inn: Optional[int]=None, # 10 или 12 цифр
-                ogrn: Optional[int]=None, # 13 цифр
-                kpp: Optional[int]=None, # 9 цифр
-                bik: Optional[int]=None, # 9 цифр
-                correspondent_account: Optional[int]=None, # Корреспонденсткий счёт - 20 цифр 
-                payment_account: Optional[int]=None # Расчётный счёт - 20 цифр
-                ):
+                 user_type: str,  # 'org' или 'ind'
+                 username: str,
+                 password: str,
+                 email: EmailStr,
+                 contact_number: Optional[str],
+                 company_name: Optional[str] = None,
+                 company_type: Optional[str] = None,  # ИП, ООО, АО, ЗАО
+                 director_name: Optional[str] = None,  # ФИО директора
+                 registration_date: Optional[date] = None,  # "YYYY-MM-DD"
+                 legal_address: Optional[str] = None,  # Юридический адрес
+                 physical_address: Optional[str] = None,
+                 inn: Optional[int] = None,  # 10 или 12 цифр
+                 ogrn: Optional[int] = None,  # 13 цифр
+                 kpp: Optional[int] = None,  # 9 цифр
+                 bik: Optional[int] = None,  # 9 цифр
+                 correspondent_account: Optional[int] = None,  # 20 цифр
+                 payment_account: Optional[int] = None):
         self.user_type = self.check_user_type(user_type)
         self.username = self.check_username(username)
         self.email = self.check_email(email)
@@ -78,31 +78,34 @@ class User(BaseUsers):
         self.company_name = self.check_company_name(company_name)
         self.company_type = self.check_company_type(company_type)
         self.director_name = self.check_director_name(director_name)
-        self.registration_date = self.check_registration_date(registration_date)
+        self.registration_date = self.check_registration_date(
+                                 registration_date)
         self.legal_address = self.check_legal_address(legal_address)
         self.physical_address = self.check_physical_address(physical_address)
         self.inn = self.check_inn(inn)
         self.ogrn = self.check_ogrn(ogrn)
         self.kpp = self.check_kpp(kpp)
         self.bik = self.check_bik(bik)
-        self.correspondent_account = self.check_correspondent_account(correspondent_account)
+        self.correspondent_account = self.check_correspondent_account(
+                                     correspondent_account)
         self.payment_account = self.check_payment_account(payment_account)
         self.contact_number = self.check_contact_number(contact_number)
         self.user_role = UserRoleEnum.NotVerifyed
-        
-    
+
     def check_password(self, password: str) -> bool:
         result = pbkdf2_sha256.verify(password, self.password_hash)
-        log.debug(f"Пароль проверен у {self.email}: {'success' if result else 'failure'}")
+        if result:
+            log.debug(f"Пароль проверен у {self.email}: Успешно")
+        else:
+            log.debug(f"Пароль проверен у {self.email}: Неверный")
         return result
-    
+
     def update_password(self, old_password: str, new_password: str) -> None:
         if not self.check_password(old_password):
-            log.warning(f"Ошибка при смене пароля у {self.email}: Неверный старый пароль")
-            raise ValueError("Старый пароль не верен")
+            log.warning(f"Неверный старый пароль у {self.email}")
+            raise ValueError("Старый пароль неверен")
         self.password_hash = pbkdf2_sha256.hash(new_password)
         log.info(f"Пароль успешно сменён для {self.email}")
-
 
     def check_user_type(self, value: str):
         if value not in ["org", "ind"]:
@@ -166,7 +169,7 @@ class User(BaseUsers):
             if len(value) != 9:
                 raise ValueError("kpp должен быть int с 9 цифрами")
         return value
-    
+
     def check_bik(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 9:
@@ -176,21 +179,20 @@ class User(BaseUsers):
     def check_correspondent_account(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 20:
-                raise ValueError("correspondent_account должен быть int с 20 цифрами")
+                raise ValueError("У correspondent_account должно быть 20 цифр")
         return value
 
     def check_payment_account(self, value: Optional[int]):
         if not isinstance(value, Optional[int]):
             if len(value) != 20:
-                raise ValueError("payment_account должен быть int с 20 цифрами")
+                raise ValueError("У payment_account должно быть 20 цифр")
         return value
 
     def check_contact_number(self, value: Optional[str]):
         if not isinstance(value, Optional[str]):
             raise ValueError('contact_number должен быть str')
         return value
-    
-    
+
     def to_dict(self) -> dict:
         log.debug(f"Конвертирую данные пользователя {self.email} в словарь")
         if self.user_type == 'ind':
@@ -227,7 +229,7 @@ class User(BaseUsers):
                 "created": self.created.isoformat(),
                 "updated": self.updated.isoformat(),
             }
-    
+
     @classmethod
     def validate_data(cls, data: Dict[str, Any]) -> "User":
         """
@@ -235,11 +237,11 @@ class User(BaseUsers):
         Создаёт объект, если всё верно, или вызывает исключение.
             Параметры:
                 Словарь с данными для валидации.
-                
+
             Возвращает:
                 Объект User.
         """
-        log.debug(f"Проверяю правильность введённых данных")
+        log.debug("Проверяю правильность введённых данных")
         try:
             if data["user_type"] == 'ind':
                 return cls(
@@ -259,7 +261,9 @@ class User(BaseUsers):
                     company_name=data["company_name"],
                     company_type=data["company_type"],
                     director_name=data["director_name"],
-                    registration_date=datetime.strptime(data["registration_date"], "%Y-%m-%d").date(),
+                    registration_date=datetime.strptime(
+                                            data["registration_date"],
+                                            "%Y-%m-%d").date(),
                     legal_address=data["legal_address"],
                     physical_address=data["physical_address"],
                     inn=int(data["inn"]),
@@ -275,7 +279,7 @@ class User(BaseUsers):
             raise ValueError(f"Ошибка валидации данных: {e}")
         except Exception as e:
             raise ValueError(f"Неожиданная ошибка: {e}")
-        
+
     def print_profile(self) -> str:
         if self.user_type == 'org':
             return (

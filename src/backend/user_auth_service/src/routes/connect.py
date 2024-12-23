@@ -44,16 +44,17 @@ async def put_user_info(request: Request, user_id: UUID) -> dict:
     """
     Эндпоинт изменения информации о пользователе по его ID.
         На вход:
-            Внутри эндпоинта '/user_id', а также словарь из class User в формате json.
+            Внутри эндпоинта '/user_id',
+            а также словарь из class User в формате json.
             Пример:
                 http://0.0.0.0:8000/user/e5f8433e-76a9-4509-87f0-e1b12354d92b
 
                 "Content-Type: application/json"
                 {
-                "user_type": "ind", 
-                "username": "new_egor228", 
-                "password": "new_password", 
-                "email": "new_citymodz@yandex.com", 
+                "user_type": "ind",
+                "username": "new_egor228",
+                "password": "new_password",
+                "email": "new_citymodz@yandex.com",
                 "contact_number": "+79000111222"
                 }'
     """
@@ -61,5 +62,3 @@ async def put_user_info(request: Request, user_id: UUID) -> dict:
     data = await request.json()
     put_user_info_handler(user_id, data)
     return {"status": "success"}
-
-

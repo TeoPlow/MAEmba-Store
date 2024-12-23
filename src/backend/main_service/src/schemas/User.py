@@ -8,27 +8,27 @@ from src.core.logging import log
 
 class User():
     """
-    Хранит в себе объект "Пользователя" который сразу может быть или Физ.Лицом или Юр.Лицом.
+    Хранит в себе объект "Пользователя",
+    который сразу может быть или Физ.Лицом или Юр.Лицом.
     """
     def __init__(self,
-                user_type: str, # 'org' или 'ind'
-                username: str,
-                password: str,
-                email: EmailStr,
-                contact_number: Optional[str],
-                company_name: Optional[str]=None,
-                company_type: Optional[str]=None, # Тип компании - ИП, ООО, АО, ЗАО
-                director_name: Optional[str]=None, # ФИО директора
-                registration_date: Optional[date]=None, # Дата регистрации - "YYYY-MM-DD"
-                legal_address: Optional[str]=None, # Юридический адрес
-                physical_address: Optional[str]=None,
-                inn: Optional[int]=None, # 10 или 12 цифр
-                ogrn: Optional[int]=None, # 13 цифр
-                kpp: Optional[int]=None, # 9 цифр
-                bik: Optional[int]=None, # 9 цифр
-                correspondent_account: Optional[int]=None, # Корреспонденсткий счёт - 20 цифр 
-                payment_account: Optional[int]=None # Расчётный счёт - 20 цифр
-                ):
+                 user_type: str,  # 'org' или 'ind'
+                 username: str,
+                 password: str,
+                 email: EmailStr,
+                 contact_number: Optional[str],
+                 company_name: Optional[str] = None,
+                 company_type: Optional[str] = None,  # ИП, ООО, АО, ЗАО
+                 director_name: Optional[str] = None,  # ФИО директора
+                 registration_date: Optional[date] = None,  # "YYYY-MM-DD"
+                 legal_address: Optional[str] = None,  # Юридический адрес
+                 physical_address: Optional[str] = None,
+                 inn: Optional[int] = None,  # 10 или 12 цифр
+                 ogrn: Optional[int] = None,  # 13 цифр
+                 kpp: Optional[int] = None,  # 9 цифр
+                 bik: Optional[int] = None,  # 9 цифр
+                 correspondent_account: Optional[int] = None,  # 20 цифр
+                 payment_account: Optional[int] = None):
         self.__user_type = user_type
         self.__username = username
         self.__email = email
@@ -46,21 +46,23 @@ class User():
         self.__correspondent_account = correspondent_account
         self.__payment_account = payment_account
         self.__contact_number = contact_number
-        
-    
+
     def check_password(self, password: str) -> bool:
         result = pbkdf2_sha256.verify(password, self.__password_hash)
-        log.debug(f"Пароль проверен у {self.__email}: {'success' if result else 'failure'}")
+        if result:
+            log.debug(f"Пароль проверен у {self.__email}: Успешно")
+        else:
+            log.warning(f"Пароль проверен у {self.__email}: Неверный")
         return result
-    
+
     @property
     def password(self) -> str:
         return self.__password_hash
-    
+
     @password.setter
     def password(self, old_password: str, new_password: str) -> None:
         if not self.check_password(old_password):
-            log.warning(f"Ошибка при смене пароля у {self.__email}: Неверный старый пароль")
+            log.warning(f"Неверный старый пароль у {self.__email}")
             raise ValueError("Старый пароль не верен")
         self.__password_hash = pbkdf2_sha256.hash(new_password)
         log.info(f"Пароль успешно сменён для {self.__email}")
@@ -68,17 +70,17 @@ class User():
     @property
     def user_type(self) -> str:
         return self.__user_type
-    
+
     @user_type.setter
     def user_type(self, value: str):
         if (value != "org") and (value != "ind"):
             raise ValueError("Тип пользователя должно быть 'org' или 'ind'")
         self.__user_type = value
-    
+
     @property
     def username(self) -> str:
         return self.__username
-    
+
     @username.setter
     def username(self, value: str):
         if not isinstance(value, str):
@@ -165,7 +167,6 @@ class User():
             raise ValueError("INN должен быть int с 10 или 12 цифрами")
         self.__inn = value
 
-    
     @property
     def ogrn(self) -> int:
         return self.__ogrn
@@ -185,7 +186,7 @@ class User():
         if not isinstance(value, int) or len(value) == 9:
             raise ValueError("kpp должен быть int с 9 цифрами")
         self.__kpp = value
-    
+
     @property
     def bik(self) -> int:
         return self.__bik
@@ -203,7 +204,7 @@ class User():
     @correspondent_account.setter
     def correspondent_account(self, value: int):
         if not isinstance(value, int) or len(value) == 20:
-            raise ValueError("correspondent_account должен быть int с 20 цифрами")
+            raise ValueError("correspondent_account должен быть с 20 цифрами")
         self.__correspondent_account = value
 
     @property
@@ -228,8 +229,7 @@ class User():
             if isinstance(number, str) or len(number) > 17:
                 raise ValueError(f"Не похож на номер телефон элемент {number}")
         self.__contact_number = value
-    
-    
+
     @classmethod
     def validate_data(cls, data: Dict[str, Any]) -> "User":
         """
@@ -237,10 +237,12 @@ class User():
         Создаёт объект, если всё верно, или вызывает исключение.
             Параметры:
                 Словарь с данными для валидации.
-                
+
             Возвращает:
                 Объект User.
         """
+        registration_date = datetime.strptime(data["registration_date"],
+                                              "%Y-%m-%d").date()
         try:
             if data["user_type"] == 'ind':
                 return cls(
@@ -260,7 +262,7 @@ class User():
                     company_name=data["company_name"],
                     company_type=data["company_type"],
                     director_name=data["director_name"],
-                    registration_date=datetime.strptime(data["registration_date"], "%Y-%m-%d").date(),
+                    registration_date=registration_date,
                     legal_address=data["legal_address"],
                     physical_address=data["physical_address"],
                     inn=int(data["inn"]),
@@ -276,7 +278,7 @@ class User():
             raise ValueError(f"Ошибка валидации данных: {e}")
         except Exception as e:
             raise ValueError(f"Неожиданная ошибка: {e}")
-        
+
     def print_profile(self) -> str:
         if self.user_type == 'ind':
             return (

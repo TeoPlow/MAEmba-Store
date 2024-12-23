@@ -14,19 +14,19 @@ def get_user_info_handler(user_id: UUID) -> dict[str, Any] | SpecialException:
     Получает информацию о пользователе из User_Auth API.
         Параметры:
             user_id: ID пользователя
-                
+
         Возвращает:
             Словарь типа class User.
     """
     url = USER_API_URL + f"/{user_id}"
     headers = {"Content-Type": "application/json"}
-    
+
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         result = response.json()
         log.debug(f"Получил от USER API: {result}")
-        
+
         if result["status"] == "success":
             log.debug(f"Возвращаю инфу о {result["data"]["email"]}")
             return result["data"]
@@ -34,7 +34,7 @@ def get_user_info_handler(user_id: UUID) -> dict[str, Any] | SpecialException:
             return result["message"]
         else:
             raise SpecialException("Передача прошла не успешно")
-    
+
     except RequestException as e:
         raise SpecialException(f"Ошибка при отправке запроса: {e}")
     except ValueError as e:

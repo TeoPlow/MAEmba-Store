@@ -1,8 +1,8 @@
 # Основные зависимости
 fastapi                 # Веб-фреймворк для создания API
-kafka-python
-python-dotenv
-passlib
+kafka-python            # Клиент для взаимодействия с Apache Kafka
+python-dotenv           # Библиотека для работы с переменными окружения из .env файлов
+passlib                 # Библиотека для работы с хэшированием паролей
 uvicorn[standard]       # ASGI-сервер для FastAPI
 sqlalchemy              # ORM для работы с базой данных
 alembic                 # Инструмент миграции базы данных для SQLAlchemy
@@ -10,7 +10,8 @@ psycopg2-binary         # Драйвер для работы с PostgreSQL
 pandas                  # Библиотека для анализа данных
 scikit-learn            # Библиотека для машинного обучения
 catboost                # Библиотека градиентного бустинга для ML
-jinja2
+jinja2                  # Шаблонизатор для создания HTML-шаблонов
+
 
 # Безопасность и авторизация
 oauthlib                # Библиотека для реализации OAuth

@@ -2,11 +2,11 @@ from typing import Dict, Any
 
 
 class Item:
-    def __init__(self, 
-                name: str = None,
-                price: float = None,
-                stock: int = None,
-                item_category_id: int = None):
+    def __init__(self,
+                 name: str = None,
+                 price: float = None,
+                 stock: int = None,
+                 item_category_id: int = None):
         self.__name = name
         self.__price = price
         self.__stock = stock
@@ -15,7 +15,7 @@ class Item:
     @property
     def name(self) -> str:
         return self.__name
-    
+
     @name.setter
     def name(self, value: str):
         if not isinstance(value, str):
@@ -25,7 +25,7 @@ class Item:
     @property
     def price(self) -> float:
         return self.__price
-    
+
     @price.setter
     def price(self, value: float):
         if not isinstance(value, (int, float)) or value < 0:
@@ -35,23 +35,23 @@ class Item:
     @property
     def stock(self) -> int:
         return self.__stock
-    
+
     @stock.setter
     def stock(self, value: int):
         if not isinstance(value, int) or value < 0:
-            raise ValueError("Количество на складе должно быть целым числом больше или равным 0")
+            raise ValueError("Такого числа товаров не должно быть")
         self.__stock = value
 
     @property
     def item_category_id(self) -> int:
         return self.__item_category_id
-    
+
     @item_category_id.setter
     def item_category_id(self, value: int):
         if not isinstance(value, int) or value <= 0:
-            raise ValueError("ID категории товара должно быть положительным целым числом")
+            raise ValueError("ID категории должно быть положительным и целым")
         self.__item_category_id = value
-    
+
     @classmethod
     def validate_data(cls, data: Dict[str, Any]) -> "Item":
         """
@@ -59,7 +59,7 @@ class Item:
         Создаёт объект, если всё верно, или вызывает исключение.
             Параметры:
                 Словарь с данными для валидации.
-                
+
             Возвращает:
                 Объект Item.
         """
@@ -72,7 +72,7 @@ class Item:
             )
         except (ValueError, TypeError) as e:
             raise ValueError(f"Ошибка валидации данных: {e}")
-    
+
     def print_item(self) -> str:
         return (
             f"Название: {self.name}\n"
