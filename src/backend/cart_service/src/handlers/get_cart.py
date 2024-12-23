@@ -7,12 +7,13 @@ from src.core.exceptions import SpecialException
 from src.core.logging import log
 
 
-def get_cart_handler(user_id: UUID, db = None) -> dict[str, Any] | SpecialException:
+def get_cart_handler(user_id: UUID,
+                     db=None) -> dict[str, Any] | SpecialException:
     """
     Получает информацию о корзине из cart_database.
         Параметры:
             user_id: ID пользователя
-                
+
         Возвращает:
             Словарь с информацией о корзине или SpecialException.
     """
@@ -22,10 +23,10 @@ def get_cart_handler(user_id: UUID, db = None) -> dict[str, Any] | SpecialExcept
 
     try:
         cart: List[Cart] = db.query(Cart).filter(Cart.user_id == user_id).all()
-        
+
         if not cart:
-            raise SpecialException(f"Корзина пользователя с ID {user_id} не найдена.")
-        
+            raise SpecialException(f"Корзина с user_id={user_id} не найдена")
+
         cart_data = []
         for item in cart:
             cart_data.append(item.to_dict())

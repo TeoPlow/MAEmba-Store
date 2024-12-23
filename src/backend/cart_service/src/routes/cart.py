@@ -39,5 +39,3 @@ async def delete_cart_item(request: Request, user_id: UUID) -> dict:
     data = await request.json()
     delete_cart_item_handler(data, user_id)
     return {"status": "success"}
-
-

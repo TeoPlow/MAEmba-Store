@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from src.db.database import BaseCart
 from uuid import uuid4
 from src.core.exceptions import SpecialException
-from src.core.logging import log
+# from src.core.logging import log
 
 
 class Cart(BaseCart):
@@ -25,7 +25,11 @@ class Cart(BaseCart):
     price = Column(Float, nullable=False)
     time = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
 
-    def __init__(self, user_id: UUID, item_id: int, quantity: int, price: float):
+    def __init__(self,
+                 user_id: UUID,
+                 item_id: int,
+                 quantity: int,
+                 price: float):
         self.user_id = self.check_user_id(user_id)
         self.item_id = self.check_item_id(item_id)
         self.quantity = self.check_quantity(quantity)
@@ -37,17 +41,17 @@ class Cart(BaseCart):
 
     def check_item_id(self, value: int) -> int:
         if not isinstance(value, int) or value <= 0:
-            raise SpecialException("item_id должен быть положительным числом.")
+            raise SpecialException("item_id должен быть положительным числом")
         return value
 
     def check_quantity(self, value: int) -> int:
         if not isinstance(value, int) or value <= 0:
-            raise SpecialException("quantity должен быть положительным числом.")
+            raise SpecialException("quantity должен быть положительным числом")
         return value
 
     def check_price(self, value: float) -> float:
         if not isinstance(value, (int, float)) or value <= 0:
-            raise SpecialException("price должен быть положительным числом.")
+            raise SpecialException("price должен быть положительным числом")
         return value
 
     def to_dict(self) -> dict:

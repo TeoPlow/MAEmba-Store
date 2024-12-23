@@ -21,13 +21,16 @@ def delete_cart_item_handler(data: dict[str, Any], user_id: UUID, db=None):
         db = next(get_db_cart())
 
     try:
-        result = db.query(Cart).filter(Cart.user_id == user_id, Cart.item_id == item_id).delete()
-        
+        result = db.query(Cart).filter(Cart.user_id == user_id,
+                                       Cart.item_id == item_id).delete()
+
         if result == 0:
-            raise SpecialException(f"Запись с user_id={user_id} и item_id={item_id} не найдена в корзине.")
+            raise SpecialException(f"""
+            Запись с user_id={user_id} и item_id={item_id} не найдена
+                """)
 
         db.commit()
-        log.info(f"Предмет успешно удалён из корзины.")
+        log.info("Предмет успешно удалён из корзины.")
     finally:
         if db is not None:
             db.close()

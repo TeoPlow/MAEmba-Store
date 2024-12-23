@@ -23,14 +23,18 @@ class ColorFormatter(logging.Formatter):
         record.levelname = f"{log_color}{record.levelname}{Style.RESET_ALL}"
         record.msg = f"{log_color}{record.msg}{Style.RESET_ALL}"
         return super().format(record)
-    
+
+
 logger_config = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "base": {
             "()": ColorFormatter,
-            "format": "%(levelname)s | %(name)s | %(asctime)s | %(filename)s:%(lineno)s | %(message)s",
+            "format": (
+                "%(levelname)s | %(name)s | %(asctime)s | "
+                "%(filename)s:%(lineno)s | %(message)s"
+            ),
             "datefmt": "%H:%M:%S"
         }
     },
