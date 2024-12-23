@@ -1,3 +1,4 @@
 # Класс для ловли исключений
-class SpecialException():
-    pass
+class SpecialException(Exception):
+    def __init__(self, message: str):
+        super().__init__(message)
