@@ -14,7 +14,7 @@ def ping_pong():
 
 
 @router.get(
-    "/item/search",
+    "/search",
     description="Поиск товаров по имени и цене",
     response_model=list[ItemBase],
     response_description="Список товаров, удовлетворяющих параметрам поиска",
@@ -29,7 +29,7 @@ async def search_items(
 
 
 @router.get(
-    "/item/{item_id}",
+    "/{item_id}",
     description="Получение информации о товаре",
     response_model=ItemBase,
     response_description="Информация о товаре (наименование, цена, количество, номер категории)",
@@ -46,7 +46,7 @@ async def get_item_by_id(
 
 
 @router.put(
-    "/item",
+    "/",
     description="Обновление данных о товаре",
     response_description="Статус выполнения операции",
     summary="Обновление данных о товаре",
@@ -62,7 +62,7 @@ async def update_item(
 
 
 @router.post(
-    "/item",
+    "/",
     description="Добавление нового товара",
     response_description="Статус выполнения операции",
     summary="Добавление нового товара",

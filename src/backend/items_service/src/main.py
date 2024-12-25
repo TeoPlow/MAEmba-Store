@@ -11,7 +11,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-app.include_router(items.router, prefix="/api")
+app.include_router(items.router, prefix="")
 
 
 def start_app(config):
