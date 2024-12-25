@@ -10,6 +10,11 @@ uvicorn
 colorama
 python-dotenv
 passlib
+asyncpg==0.30.0
+orjson==3.10.12
+pydantic==2.9.2
+pydantic_core==2.23.4
+PyYAML==6.0.2
 
 # Библиотеки для ML
 # catboost
