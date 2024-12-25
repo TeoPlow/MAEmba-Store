@@ -3,7 +3,7 @@ from functools import cache
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, FastAPI
 from src.handlers.item import *
-from src.db.postgres import get_session
+from src.db.database import get_db_items
 import logging
 
 dependencies_container: dict[Type | Callable, Callable] = {}
@@ -22,7 +22,7 @@ def add_factory_to_mapper(cls: Type | Callable):
 
 @add_factory_to_mapper(ItemHandlerABC)
 @cache
-def create_item_service(session: AsyncSession = Depends(get_session)) -> ItemHandlerABC:
+def create_item_service(session: AsyncSession = Depends(get_db_items)) -> ItemHandlerABC:
     repository = ItemRepository(session=session)
     return ItemHandler(repository)
 

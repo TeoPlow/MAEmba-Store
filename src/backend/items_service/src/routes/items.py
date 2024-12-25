@@ -3,7 +3,7 @@ from http import HTTPStatus
 from src.handlers.item import ItemHandlerABC
 from src.schemas.items import *
 from src.schemas.result import GenResult
-from src.models.items import Item
+from models.item import Item
 
 router = APIRouter()
 

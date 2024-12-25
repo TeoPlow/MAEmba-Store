@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.storage.base import RepositoryABC, PostgresRepository
 from src.schemas.items import CreateItemDto
-from src.models.items import Item
+from backend.items_service.src.models.item import Item
 
 class ItemRepositoryABC(RepositoryABC, ABC):
     @abstractmethod
