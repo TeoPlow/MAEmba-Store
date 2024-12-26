@@ -19,7 +19,11 @@ def validate_auth_handler(request: ValidateAuthRequest):
     with next(get_db_users()) as db:
         query = db.query(AuthToken).filter(AuthToken.token == token)
         auth_token = query.first()
-        if not auth_token or auth_token.expires_at < datetime.now(pytz.timezone('Europe/Moscow')):
+        if not auth_token:
+            time_now = datetime.now(pytz.timezone('Europe/Moscow'))
+            if auth_token.expires_at < time_now:
+                log.warning("Токен авторизации истёк")
+                raise SpecialException("Истёкший токен авторизации")
             log.warning("Токен авторизации недействителен или истёк")
             raise SpecialException("Неверный или истекший токен авторизации")
 
