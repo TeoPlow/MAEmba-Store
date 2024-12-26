@@ -2,10 +2,10 @@ from sqlalchemy import update
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import Column, Integer, String, Float, Text
-from src.db.postgres import Base
+from src.db.database import BaseItems
 
 
-class Category(Base):
+class Category(BaseItems):
     __tablename__ = "categories"
 
     item_category_id = Column(
