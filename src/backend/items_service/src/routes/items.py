@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from http import HTTPStatus
 from src.handlers.item import ItemHandlerABC
 from src.schemas.items import *
@@ -6,11 +6,6 @@ from src.schemas.result import GenResult
 from src.models.items import Item
 
 router = APIRouter()
-
-
-@router.get("/ping")
-def ping_pong():
-    return "pong"
 
 
 @router.get(
@@ -41,7 +36,8 @@ async def get_item_by_id(
 ):
     result: GenResult[ItemBase] = await items_service.get_item(item_id=item_id)
     if not result.is_success:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=result.error.reason)
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND,
+                            detail=result.error.reason)
     return result.response
 
 
@@ -57,8 +53,9 @@ async def update_item(
 ):
     result = await items_service.update_item(body)
     if not result.is_success:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=result.error.reason)
-    return { "status": "success" }
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                            detail=result.error.reason)
+    return {"status": "success"}
 
 
 @router.post(
@@ -73,5 +70,22 @@ async def create_item(
 ):
     result = await items_service.create_item(body)
     if not result.is_success:
-        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=result.error.reason)
-    return { "status": "success" }
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                            detail=result.error.reason)
+    return {"status": "success"}
+
+
+@router.get(
+    "/",
+    description="Получение страницы товаров",
+    response_model=PaginatedResponse,
+    summary="Получение страницы товаров")
+async def page(
+    # page_num по умолчанию равен 1, минимальное значение 1
+    page_num: int = Query(1, ge=1),
+    # page_size по умолчанию равен 10, минимальное значение 1
+    page_size: int = Query(10, ge=1),
+    items_service: ItemHandlerABC = Depends()
+):
+    result = await items_service.get_page(page_size, page_num)
+    return result.response
