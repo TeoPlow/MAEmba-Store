@@ -21,7 +21,7 @@ def user_register_handler(data: dict[str, Any],
         Возвращает:
             ID зарегистрированного пользователя, либо SpecialException.
     """
-    log.debug(f"Регистрирую пользователя {data["email"]}")
+    log.debug(f"Регистрирую пользователя {data['email']}")
     if db is None:
         db = next(get_db_users())
 

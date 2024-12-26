@@ -139,7 +139,7 @@ async def confirm_email(token: str):
     try:
         token_data = confirm_email_handler(token)
         return {"status": "success",
-                "message": f"Почта {token_data["email"]} успешно подтверждена"}
+                "message": f"Почта {token_data['email']} успешно подтверждена"}
     except SpecialException as e:
         log.error(e)
         return {"status": "warning", "message": str(e)}
