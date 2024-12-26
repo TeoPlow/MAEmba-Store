@@ -10,7 +10,7 @@ interface Props {
 
 export const Header: React.FC<Props> = ({ className }) => {
     return (
-        <header className={cn('border border-b', className)}>
+        <header className={cn('sticky top-0 bg-white shadow-lg shadow-black/5 z-10', className)}>
             <div>
                 <Container className="flex items-center justify-between py-8">
                     
