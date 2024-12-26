@@ -1,5 +1,23 @@
 # Сервис управления пользовтаелями и аутентификацией.
 
+Перед использованием нужно создать базу данных PostgreSQL. 
+
+Пример:
+```
+psql -U postgres
+
+CREATE DATABASE mae_store_user_auth_db;
+```
+
+Далее нужно внести данные для подключение к серверу в конфиг *.env* и запустить alembic.ini командой:
+```
+alembic upgrade head
+
+# Хороший ответ:
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 63d22fa12aab, user_auth_tables
+```
 ## **/{user_id}**
 
 Возвращает данные пользователя или изменяет данные пользователя.
@@ -34,12 +52,9 @@
         PUT http://0.0.0.0:8001/e5f8433e-76a9-4509-87f0-e1b12354d92b
 
     ```json
-    {
-    "user_type": "ind", 
-    "username": "egor228", 
-    "password": "password", 
-    "email": "AGUREZ@yandex.com", 
-    "contact_number": "+79853553825"
+    { 
+    "email": "AGUREZ@yandex.com",
+    "user_role":"Verifyed",
     }
     ```
 
@@ -87,7 +102,7 @@
 
 Авторизует пользователя. 
 
-Возвращает токен и время его работы.
+Возвращает токен авторизации и время его работы, чтобы потом из них создать куку.
 - ### POST 
 
     Запрос:
@@ -98,7 +113,7 @@
     {
     "email_or_name": "username",
     "password": "pass12345",
-    "remember_me": True
+    "remember_me": true
     }
     ```
         
@@ -109,8 +124,32 @@
     "status": "success", 
     "data": {
         "token": "eeee1234-76a9-4509-87f0-e1b12354d92b", 
-        "token-expiry": datetime.timedelta
+        "token-expiry": 2592000.0
         }
     }
     ```
 
+## **/send-confirmation-email**
+
+Отправляю пользователю ссылку на почту для авторизации.
+- ### POST 
+
+    Запрос:
+
+        POST http://0.0.0.0:8001/auth/send-confirmation-email
+
+    ```json
+    {
+    "email": "kruyneg@mail.ru",
+    "user_id": "eeee1234-76a9-4509-87f0-e1b12354d92b"
+    }
+    ```
+        
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Письмо отправлено, проверьте почту."
+    }
+    ```

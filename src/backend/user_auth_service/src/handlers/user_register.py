@@ -37,9 +37,7 @@ def user_register_handler(data: dict[str, Any],
         ).first()
 
         if existing_user:
-            raise SpecialException(f"""
-Пользователь {user.email} или номером {user.contact_number} уже существует
-                                    """)
+            raise SpecialException("Пользователь уже существует")
 
         log.debug("Добавляю нового пользователя в БД")
         db.add(user)

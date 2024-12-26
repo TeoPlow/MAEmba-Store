@@ -7,8 +7,9 @@ from uuid import UUID
 from src.schemas.User import User
 from src.core.exceptions import SpecialException
 from src.core.config import USER_API_URL
+from src.core.config import RECAPTCHA_KEY
 from src.core.logging import log
-from src.core.auth import set_cookie
+from src.core.auth import set_cookie, verify_recaptcha
 # from src.core.auth import login_required, admin_required, same_user_required
 
 
@@ -21,12 +22,16 @@ def user_login_handler(data: dict[str, Any]):
                   email_or_name: (str)
                   password: (str)
                   remember_me: (bool)
+                  captcha_token: (str) - токен капчи
     """
     log.debug("Авторизую пользователя")
     url = USER_API_URL + "/auth/login/"
     headers = {"Content-Type": "application/json"}
 
     try:
+        if not verify_recaptcha(data["captcha_token"], RECAPTCHA_KEY):
+            raise SpecialException("Капча не пройдена")
+
         response = requests.post(url, json=data, headers=headers)
         response.raise_for_status()
         result = response.json()
