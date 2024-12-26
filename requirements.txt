@@ -26,3 +26,11 @@ colorama                # Цветной логгер
 flake8                  # Линтер для проверки стиля кода
 bandit                  # Статический анализ безопасности для Python
 safety                  # Проверка уязвимостей в зависимостях
+asyncpg
+pydantic
+PyYAML
+
+# Библиотеки для ML
+# catboost
+# scikit-learn
+# pandas

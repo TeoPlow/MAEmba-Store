@@ -42,3 +42,10 @@ class UpdateItemDto(ItemBase):
 # Request schema for POST /item
 class CreateItemDto(ItemBase):
     pass
+
+
+class PaginatedResponse(BaseModel):
+    page: int = Field(..., description="Номер страницы")
+    page_size: int = Field(..., description="Количество объектов на странице")
+    total: int = Field(..., description="Общее количество страниц")
+    items: List[ItemDto]
