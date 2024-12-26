@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  user-auth-service:
+    build:
+      context: ./backend/user_auth_service
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - PORT=8002
+
+  items-service:
+    build:
+      context: ./backend/items_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+
+  cart-service:
+    build:
+      context: ./backend/cart_service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - PORT=8001

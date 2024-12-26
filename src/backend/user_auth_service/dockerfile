@@ -1,0 +1,21 @@
+# Используем минимальный образ Python
+FROM python:3.11-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Устанавливаем системные зависимости
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
+
+
+# Копируем requirements.txt из корня проекта
+COPY ./requirements.txt ./requirements.txt
+
+# Устанавливаем зависимости Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копируем проект
+COPY . .
+
+# Команда для запуска приложения
+CMD uvicorn main:app --host 0.0.0.0 --port $PORT
