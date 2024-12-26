@@ -199,8 +199,10 @@ def recommend_seasons_items(user_id:int, user_history:list, top_n=10) -> list:
         # Рекомендуем самые популярные товары
         recommendation_list = popular_items.head(top_n)['item_id'].tolist()
         
+        # Добавление данных о новой рекомендации
         new_row = {'data':now,'user_id':user_id,'recommendations':recommendation_list,'bucket_id':bucket_id}
-        all_recommendations.append(new_row)
+        row_to_append = pd.DataFrame(new_row)
+        all_recommendations = pd.concat([all_recommendations,row_to_append],ignore_index=True)
         
         return recommendation_list
     else:
@@ -225,8 +227,12 @@ def recommend_seasons_items(user_id:int, user_history:list, top_n=10) -> list:
             cosine_sim_df = prepare_data_for_user(sales_prod)
         else:
             recommendation_list = popular_items.head(top_n)['item_id'].tolist()
+
+            # Добавление данных о новой рекомендации
             new_row = {'data':now,'user_id':user_id,'recommendations':recommendation_list,'bucket_id':0}
-            all_recommendations.append(new_row)
+            row_to_append = pd.DataFrame(new_row)
+            all_recommendations = pd.concat([all_recommendations,row_to_append],ignore_index=True)
+            
             return recommendation_list
 
             
@@ -238,7 +244,9 @@ def recommend_seasons_items(user_id:int, user_history:list, top_n=10) -> list:
           
         recommendation_list = list(recommended_items)[:top_n]
 
+        # Добавление данных о новой рекомендации
         new_row = {'data':now,'user_id':user_id,'recommendations':recommendation_list,'bucket_id':bucket_id}
-        all_recommendations.append(new_row)
+        row_to_append = pd.DataFrame(new_row)
+        all_recommendations = pd.concat([all_recommendations,row_to_append],ignore_index=True)
 
         return recommendation_list
