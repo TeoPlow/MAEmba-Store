@@ -5,6 +5,7 @@ class Config:
     log_level: str = "info"
     dbconnection: str = None
     port: int = 8080
+    rabbit_connection: str = None
 
     def load(self, path: str):
         """Загружает конфигурацию из YAML-файла."""
@@ -28,7 +29,7 @@ class Config:
 
 
 def parse_args():
-    """Позваляет использовать аргумент --config для указания пути к конфигу."""
+    """Позволяет использовать аргумент --config для указания пути к конфигу."""
     parser = argparse.ArgumentParser(description="Parse configuration file path.")
     parser.add_argument(
         "--config",

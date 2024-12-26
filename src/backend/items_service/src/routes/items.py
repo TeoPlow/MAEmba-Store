@@ -85,7 +85,8 @@ async def page(
     page_num: int = Query(1, ge=1),
     # page_size по умолчанию равен 10, минимальное значение 1
     page_size: int = Query(10, ge=1),
+    category: Optional[int] = Query(None),
     items_service: ItemHandlerABC = Depends()
 ):
-    result = await items_service.get_page(page_size, page_num)
+    result = await items_service.get_page(page_size, page_num, category)
     return result.response

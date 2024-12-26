@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.storage.base import RepositoryABC, PostgresRepository
 from src.schemas.items import CreateItemDto, ItemDto
 from src.models.items import Item
+from typing import Optional
 
 
 class ItemRepositoryABC(RepositoryABC, ABC):
@@ -44,13 +45,18 @@ class ItemRepository(PostgresRepository[Item, CreateItemDto], ItemRepositoryABC)
         results = await self._session.execute(statement)
         return results.scalars().all()
 
-    async def get_page(self, *, page_num: int, page_size: int):
+    async def get_page(self, *, page_num: int, page_size: int, category_id: Optional[int]):
         # Вычисляем offset
         offset = (page_num - 1) * page_size
 
         # Строим запрос с пагинацией
         statement = (
             select(self._model)
+            .offset(offset)
+            .limit(page_size)
+        ) if not category_id else (
+            select(self._model)
+            .where(self._model.item_category_id == category_id)
             .offset(offset)
             .limit(page_size)
         )
