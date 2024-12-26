@@ -61,13 +61,15 @@ async def login(request: Request):
             Cловарь из email_or_name: (str),
                        password: (str),
                        remember_me: (bool)
+                       captcha_token: (str) - токен капчи
                        в формате json.
             Пример:
                 "Content-Type: application/json"
                 {
                 "email_or_name": "username",
                 "password": "pass12345",
-                "remember_me": True
+                "remember_me": True,
+                "captcha_token":
                 }
 
         Возвращает:
@@ -81,7 +83,9 @@ async def login(request: Request):
     log.debug("Авторизую уже существующего пользователя")
     try:
         data = await request.json()
+
         user_login_handler(data)
+
         return {"status": "success"}
     except SpecialException as e:
         log.warning(e)

@@ -41,9 +41,7 @@ def user_login_handler(data: dict[str, Any],
         ).first()
 
         if not user:
-            raise SpecialException("""
-            Пользователь с указанным Email или именем не найден
-                                   """)
+            raise SpecialException("Пользователь не найден")
 
         if not user.check_password(password):
             raise SpecialException("Неверный пароль")

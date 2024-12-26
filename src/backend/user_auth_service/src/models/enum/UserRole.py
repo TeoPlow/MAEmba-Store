@@ -1,5 +1,6 @@
 import enum
 
+
 class UserRoleEnum(enum.Enum):
     NotVerifyed = "Not_Verifyed"
     Verifyed = "Verifyed"
