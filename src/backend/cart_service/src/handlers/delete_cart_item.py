@@ -25,9 +25,7 @@ def delete_cart_item_handler(data: dict[str, Any], user_id: UUID, db=None):
                                        Cart.item_id == item_id).delete()
 
         if result == 0:
-            raise SpecialException(f"""
-            Запись с user_id={user_id} и item_id={item_id} не найдена
-                """)
+            raise SpecialException(f"Записи с {user_id} и {item_id} нету")
 
         db.commit()
         log.info("Предмет успешно удалён из корзины.")
