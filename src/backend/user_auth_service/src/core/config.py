@@ -20,6 +20,14 @@ ALGORITHM = os.environ.get("ALGORITHM")
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
 
+MAIL_SERVER = os.environ.get("MAIL_SERVER")
+MAIL_PORT = os.environ.get("MAIL_PORT")
+MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+MAIL_FROM = os.environ.get("MAIL_FROM")
+MAIL_STARTTLS = os.environ.get("MAIL_STARTTLS")
+MAIL_SSL_TLS = os.environ.get("MAIL_SSL_TLS")
+
 # Вот здесь нужно поменять на наш эндпоинт
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/mae/login")
 

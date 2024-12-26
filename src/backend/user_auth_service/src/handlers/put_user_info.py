@@ -20,19 +20,15 @@ def put_user_info_handler(user_id: UUID, data: dict[str, Any], db=None):
         db = next(get_db_users())
 
     try:
-        email = data.get("email")
-
-        if not user_id and not email:
-            raise SpecialException("Необходимо указать ID или email")
+        if not user_id:
+            raise SpecialException("Необходимо указать ID")
 
         user = db.query(User).filter(
-            (User.id == user_id) | (User.email == email)
+            (User.id == user_id)
         ).first()
 
         if not user:
-            raise SpecialException(f"""
-            Пользователь с ID {user_id} или Email {email} не найден.
-                                   """)
+            raise SpecialException("Пользователь не найден")
 
         updated_fields = {
             key: value

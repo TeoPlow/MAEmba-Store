@@ -91,3 +91,19 @@ def same_user_required(f):
         return await f(request, user_id, *args, **kwargs)
 
     return decorated_function
+
+
+def verify_recaptcha(token, secret_key) -> bool:
+    try:
+        url = "https://www.google.com/recaptcha/api/siteverify"
+        data = {
+            "secret": secret_key,
+            "response": token
+        }
+        response = requests.post(url, data=data)
+        if response:
+            return True
+        else:
+            return False
+    except Exception as e:
+        raise SpecialException(f"Беда в капче: {e}")
