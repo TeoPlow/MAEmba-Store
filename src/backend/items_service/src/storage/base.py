@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete, update
 from sqlalchemy.exc import NoResultFound
-from db.database import BaseItems
+from src.db.database import BaseItems
 from typing import Generic, TypeVar, Type
 
 ModelType = TypeVar("ModelType", bound=BaseItems)

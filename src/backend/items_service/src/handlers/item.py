@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from src.schemas import items
-from backend.items_service.src.models.item import Item
+from src.models.item import Item
 from src.schemas.result import Result, Error, GenResult
 from src.storage.item import ItemRepository
 from typing import List
