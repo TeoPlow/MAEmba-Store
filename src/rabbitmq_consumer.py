@@ -43,4 +43,3 @@ def parse_message(message: str):
         print(f"Ошибка при парсинге сообщения: {e}")
         return {}
 
-
