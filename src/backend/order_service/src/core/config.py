@@ -5,6 +5,7 @@ class Config:
     log_level: str = "info"
     dbconnection: str = None
     port: int = 8080
+    rabbit_connection: str = None
 
     def load(self, path: str):
         """Загружает конфигурацию из YAML-файла."""

@@ -5,7 +5,9 @@ from src.models.orders import Order
 from src.schemas.result import Result, Error, GenResult
 from src.storage.order import OrderRepository
 from sqlalchemy.orm import joinedload
+from src.core.rabbitmq import send_message
 from typing import List
+import logging
 
 
 class OrderHandlerABC(ABC):
@@ -31,8 +33,12 @@ class OrderHandler(OrderHandlerABC):
         self._repository = repository
 
     async def create_order(self, order_dto: CreateOrderDto) -> GenResult[None]:
-        await self._repository.insert(body=order_dto)
+        order = await self._repository.insert(body=order_dto)
         await self._repository.commit()
+        order = await self.get_order(order.id)
+        order = order.response
+        await send_message(order.model_dump_json())
+        logging.info(f"send to orders: {order.model_dump_json()}")
         return GenResult.success(None)
 
     async def get_order(self, order_id: uuid) -> GenResult[OrderDto]:
@@ -60,7 +66,7 @@ class OrderHandler(OrderHandlerABC):
     async def get_user_orders(self, user_id: uuid) -> GenResult[List[OrderDto]]:
         resp = await self._repository.get_by_user(user_id=user_id)
         return GenResult.success(resp)
-        
+
 
 
     async def update_status(self, order_dto: UpdateOrderDto) -> GenResult[None]:
