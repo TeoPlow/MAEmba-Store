@@ -1,7 +1,6 @@
 import requests
 from fastapi import APIRouter, Request
 from src.core.config import ORDER_API_URL
-from uuid import UUID
 from src.core.exceptions import SpecialException
 from src.core.logging import log
 
