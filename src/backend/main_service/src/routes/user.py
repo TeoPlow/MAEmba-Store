@@ -87,8 +87,9 @@ async def login(request: Request):
 
     try:
         data = await request.json()
-        if not verify_recaptcha(data["captcha_token"], RECAPTCHA_KEY):
-            raise SpecialException("Капча не пройдена")
+        # Отключил капчу, т.к. стримлит
+        # if not verify_recaptcha(data["captcha_token"], RECAPTCHA_KEY):
+        #     raise SpecialException("Капча не пройдена")
 
         response = requests.post(url, json=data, headers=headers)
         response.raise_for_status()
