@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, FastAPI
 from src.handlers.item import *
 from src.handlers.category import *
-from src.db.postgres import get_session
+from backend.items_service.src.db.database import get_session
 import logging
 
 dependencies_container: dict[Type | Callable, Callable] = {}
