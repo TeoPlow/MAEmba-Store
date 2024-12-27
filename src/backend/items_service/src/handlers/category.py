@@ -3,7 +3,9 @@ from src.schemas import categories
 from src.models.categories import Category
 from src.schemas.result import Result, Error, GenResult
 from src.storage.category import CategoryRepository
+from src.core.rabbitmq import send_message_category
 from typing import List
+import logging
 
 
 class CategoryHandlerABC(ABC):
@@ -35,10 +37,14 @@ class CategoryHandler(CategoryHandlerABC):
 
     async def get_all(self) -> GenResult[List[categories.CategoryDto]]:
         resp = await self._repository.get_all()
-        resp = [categories.CategoryDto(**category.to_dict()) for category in resp]
+        resp = [categories.CategoryDto(**category.to_dict())
+                for category in resp]
         return GenResult.success(resp)
 
     async def create_category(self, category_dto: categories.CreateCategoryDto) -> GenResult[None]:
-        await self._repository.insert(body=category_dto)
+        category = await self._repository.insert(body=category_dto)
         await self._repository.commit()
+        await send_message_category(categories.CategoryDto(**category.to_dict()).model_dump_json())
+        logging.info(f"send to categories: {categories.CategoryDto(
+            **category.to_dict()).model_dump_json()}")
         return GenResult.success(None)

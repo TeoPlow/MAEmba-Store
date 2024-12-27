@@ -4,7 +4,9 @@ from src.schemas import items
 from src.models.items import Item
 from src.schemas.result import Result, Error, GenResult
 from src.storage.item import ItemRepository
-from typing import List
+from typing import List, Optional
+from src.core.rabbitmq import send_message_item
+import logging
 
 
 class ItemHandlerABC(ABC):
@@ -24,7 +26,7 @@ class ItemHandlerABC(ABC):
     async def update_item(self, item_dto: items.UpdateItemDto) -> GenResult[None]:
         pass
 
-    async def get_page(self, page_size: int, page_num: int) -> GenResult[items.PaginatedResponse]:
+    async def get_page(self, page_size: int, page_num: int, category_id: Optional[int]) -> GenResult[items.PaginatedResponse]:
         pass
 
 
@@ -46,8 +48,11 @@ class ItemHandler(ItemHandlerABC):
         return GenResult.success(resp)
 
     async def create_item(self, item_dto: items.CreateItemDto) -> GenResult[None]:
-        await self._repository.insert(body=item_dto)
+        item = await self._repository.insert(body=item_dto)
         await self._repository.commit()
+        await send_message_item(items.ItemDto(**item.to_dict()).model_dump_json())
+        logging.info(f"send to items: {items.ItemDto(
+            **item.to_dict()).model_dump_json()}")
         return GenResult.success(None)
 
     async def update_item(self, item_dto) -> GenResult[None]:
@@ -64,8 +69,8 @@ class ItemHandler(ItemHandlerABC):
             await self._repository.commit()
             return GenResult.success(None)
 
-    async def get_page(self, page_size, page_num) -> GenResult[items.PaginatedResponse]:
-        items_ = await self._repository.get_page(page_num=page_num, page_size=page_size)
+    async def get_page(self, page_size, page_num, category_id) -> GenResult[items.PaginatedResponse]:
+        items_ = await self._repository.get_page(page_num=page_num, page_size=page_size, category_id=category_id)
         return GenResult.success(items.PaginatedResponse(
             page=page_num,
             page_size=page_size,

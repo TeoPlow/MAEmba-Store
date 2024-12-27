@@ -1,4 +1,5 @@
-port: 8080
+port: 8083
 
 log_level: debug
 dbconnection: postgresql+asyncpg://postgres:password@localhost:5433/items-db
+rabbit_connection: amqp://user:password@localhost/
