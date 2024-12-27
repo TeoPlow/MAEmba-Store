@@ -1,147 +1,30 @@
+import requests
 from fastapi import APIRouter, Request
 from uuid import UUID
 
+from src.core.config import USER_API_URL, RECAPTCHA_KEY
 from src.core.exceptions import SpecialException
+from src.core.auth import set_cookie, verify_recaptcha
+# from src.core.auth import login_required, admin_required, same_user_required
 from src.core.logging import log
-
-from src.handlers.user_service import (
-    user_register_handler,
-    user_login_handler,
-    get_user_info_handler,
-    put_user_info_handler,
-    # validate_auth_handler,
-)
 
 
 router = APIRouter()
 
-
-@router.post("/auth/register")
-async def register(request: Request):
-    """
-    Эндпоинт регистрации пользователя.
-        На вход:
-            Cловарь из class User в формате json.
-            Пример:
-                "Content-Type: application/json"
-                {
-                "user_type": "ind",
-                "username": "egor228",
-                "password": "password",
-                "email": "citymodz@yandex.com",
-                "contact_number": "+79853553825"
-                }
-
-        Возвращает:
-            UUID зарегестрированного пользователя
-            Пример:
-            {
-            "status": "success",
-            "data": {"user_id": eeee1234-76a9-4509-87f0-e1b12354d92b}
-            }
-    """
-    log.debug("Регистрирую пользователя")
-    try:
-        data = await request.json()
-        registered_user_id: UUID = user_register_handler(data)
-        return {"status": "success", "data": {"user_id": registered_user_id}}
-    except SpecialException as e:
-        log.warning(e)
-        return {"status": "warning", "message": str(e)}
-    except Exception as e:
-        log.error(f'Ошибка: {e}')
-        return {"status": "error", "message": str(e)}
-
-
-@router.post("/auth/login")
-async def login(request: Request):
-    """
-    Эндпоинт авторизации пользователя.
-        На вход:
-            Cловарь из email_or_name: (str),
-                       password: (str),
-                       remember_me: (bool)
-                       captcha_token: (str) - токен капчи
-                       в формате json.
-            Пример:
-                "Content-Type: application/json"
-                {
-                "email_or_name": "username",
-                "password": "pass12345",
-                "remember_me": True,
-                "captcha_token":
-                }
-
-        Возвращает:
-            UUID Токен авторизации по ключу "token"
-            Пример:
-            {
-            "status": "success",
-            "token": eeee1234-76a9-4509-87f0-e1b12354d92b
-            }
-    """
-    log.debug("Авторизую уже существующего пользователя")
-    try:
-        data = await request.json()
-
-        user_login_handler(data)
-
-        return {"status": "success"}
-    except SpecialException as e:
-        log.warning(e)
-        return {"status": "warning", "message": str(e)}
-    except Exception as e:
-        log.error(f'Ошибка: {e}')
-        return {"status": "error", "message": str(e)}
-
-
-@router.post("/auth/validate-token")
-async def validate_token(request: Request):
-    """
-    """
-    # log.debug("Провожу валидацию")
-    # try:
-    #     data = await request.json()
-    #     result: dict = validate_auth_handler(data)
-    #     return {"status": "success", "data": result}
-    # except SpecialException as e:
-    #     log.warning(e)
-    #     return {"status": "warning", "message": str(e)}
-    # except Exception as e:
-    #     log.error(f'Ошибка: {e}')
-    #     return {"status": "error", "message": str(e)}
-
-
 @router.get("/{user_id}")
 async def get_user_info(user_id: UUID):
-    """
-    Эндпоинт получения информации о пользователе по его ID.
-        На вход:
-            Внутри эндпоинта '/user_id'
-            Пример:
-                http://0.0.0.0:8000/user/e5f8433e-76a9-4509-87f0-e1b12354d92b
-
-        Возвращает:
-            Cловарь из class User в формате json, но без пароля.
-            Пример:
-                {
-                "status":"success",
-                "data":{
-                    "id":"e5f8433e-76a9-4509-87f0-e1b12354d92b",
-                    "email":"AGUREZ@yandex.com",
-                    "user_type":"ind",
-                    "username":"egor228",
-                    "contact_number":"+79853553825",
-                    "user_role":"Not_Verifyed",
-                    "created":"2024-12-15T15:48:46.195517+03:00",
-                    "updated":"2024-12-15T21:01:34.382072+03:00"
-                    }
-                }
-    """
     log.debug("Получаю информацию о пользователе")
+    url = USER_API_URL + f"/{user_id}"
+    headers = {"Content-Type": "application/json"}
+
     try:
-        user_info: dict = get_user_info_handler(user_id)
-        return {"status": "success", "data": user_info}
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+        
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
     except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}
@@ -152,45 +35,247 @@ async def get_user_info(user_id: UUID):
 
 @router.put("/{user_id}")
 async def put_user_info(user_id: UUID, request: Request):
-    """
-    Эндпоинт изменения информации о пользователе по его ID.
-        На вход:
-            Внутри эндпоинта '/user_id',
-            а также словарь из class User в формате json.
-            Пример:
-                http://0.0.0.0:8000/user/e5f8433e-76a9-4509-87f0-e1b12354d92b
-
-                "Content-Type: application/json"
-                {
-                "user_type": "ind",
-                "username": "new_egor228",
-                "password": "new_password",
-                "email": "new_citymodz@yandex.com",
-                "contact_number": "+79000111222"
-                }'
-
-        Возвращает:
-            Cловарь из class User в формате json, но без пароля.
-            Пример:
-                {
-                "status":"success",
-                "data":{
-                    "id":"e5f8433e-76a9-4509-87f0-e1b12354d92b",
-                    "email":"AGUREZ@yandex.com",
-                    "user_type":"ind",
-                    "username":"egor228",
-                    "contact_number":"+79853553825",
-                    "user_role":"Not_Verifyed",
-                    "created":"2024-12-15T15:48:46.195517+03:00",
-                    "updated":"2024-12-15T21:01:34.382072+03:00"
-                    }
-                }
-    """
     log.debug("Добавляю информацию о пользователе")
+    url = USER_API_URL + f"/{user_id}"
+    headers = {"Content-Type": "application/json"}
+
     try:
         data = await request.json()
-        result: dict = put_user_info_handler(user_id, data)
-        return {"status": "success", "data": result}
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+
+
+@router.post("/auth/register")
+async def register(request: Request):
+    log.debug("Регистрирую пользователя")
+    url = USER_API_URL + f"/auth/register"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+
+
+@router.post("/auth/login")
+async def login(request: Request):
+    log.debug("Авторизую уже существующего пользователя")
+    url = USER_API_URL + f"/auth/login"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        if not verify_recaptcha(data["captcha_token"], RECAPTCHA_KEY):
+            raise SpecialException("Капча не пройдена")
+
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        if result.get("status") == "success":
+            token = result["data"]["token"]
+            token_expiry = result["data"]["token-expiry"]
+
+            set_cookie(response,
+                       "auth_token",
+                       token,
+                       max_age=token_expiry)
+            log.debug(f"Установил ТОКЕН в куку")
+
+        else:
+            raise SpecialException(f"Ошибка при получении ответа: {result}")
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+    
+
+@router.post("/auth/logout")
+async def logout(request: Request):
+    log.debug("Лишает пользователя авторизации")
+    url = USER_API_URL + f"/auth/logout"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+    
+
+@router.post("/auth/send-confirmation-email")
+async def send_confirmation_email(request: Request):
+    log.debug("Отправляю пользователю ссылку на почту для авторизации")
+    url = USER_API_URL + f"/auth/send-confirmation-email"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/auth/confirm-email/{token}")
+async def confirm_email(token: UUID):
+    log.debug("Подтверждает почту по токену (из ссылки с почты)")
+    url = USER_API_URL + f"/auth/confirm-email/{token}"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+        
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+    
+
+@router.post("/auth/validate-auth")
+async def send_confirmation_email(request: Request):
+    """
+    Ничего на вход не принимает, он самостоятельный
+    """
+    log.debug("Проверяет аутентификацию пользователя по куке")
+    url = USER_API_URL + f"/auth/validate-auth"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        cookie_token: str = request.cookies.get("auth_token")
+        if not cookie_token:
+            raise SpecialException("Токен авторизации отсутствует")
+        
+        data = {"auth_token": cookie_token}
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+
+
+@router.get("/auth/protected-resource/{user_id}")
+async def confirm_email(user_id: UUID):
+    log.debug("Предоставляет доступ к защищённому ресурсу")
+    url = USER_API_URL + f"/auth/protected-resource/{user_id}"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+        
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+    
+
+@router.post("/auth/change-password")
+async def send_confirmation_email(request: Request):
+    log.debug("Отправка ссылки на почту для изменения пароля")
+    url = USER_API_URL + f"/auth/change-password"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
+    except SpecialException as e:
+        log.warning(e)
+        return {"status": "warning", "message": str(e)}
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return {"status": "error", "message": str(e)}
+    
+
+@router.post("/auth/confirm-change-password/{token}")
+async def send_confirmation_email(request: Request, token: str):
+    log.debug("Подтверждение изменения пароля по почте")
+    url = USER_API_URL + f"/auth/confirm-change-password/{token}"
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        data = await request.json()
+        response = requests.post(url, json=data, headers=headers)
+        response.raise_for_status()
+        result = response.json()
+
+        log.debug(f"Получил от USER API: {result}")
+        return result
+    
     except SpecialException as e:
         log.warning(e)
         return {"status": "warning", "message": str(e)}

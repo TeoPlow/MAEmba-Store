@@ -138,6 +138,11 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 63d22fa12aab, user_auth_ta
 
         POST http://0.0.0.0:8001/auth/logout
         
+    ```json
+    {
+    "user_id": "eeee1234-76a9-4509-87f0-e1b12354d92b"
+    }
+    ```
 
     Ответ:
     ```json
@@ -258,7 +263,7 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 63d22fa12aab, user_auth_ta
 
 ## **/confirm-change-password/{token}**
 
-Отправка ссылки на почту для изменения пароля.
+Подтверждение изменения пароля по почте.
 - ### POST 
 
     Запрос:
