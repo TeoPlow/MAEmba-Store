@@ -73,3 +73,39 @@ def user_login_handler(data: dict[str, Any],
     finally:
         if db is not None:
             db.close()
+
+
+def user_logout_handler(data: dict[str, Any],
+                        db=None):
+    """
+    Выполняет деавторизацию пользователя, удаляя данные из auth_database.
+        Параметры:
+            data: Словарь в формате response.json с инфой:
+                  user_id: (str)
+    """
+    log.debug("Деавторизация пользователя")
+    if db is None:
+        db = next(get_db_users())
+
+    try:
+        user_id = data.get("user_id")
+
+        if not user_id:
+            raise SpecialException("user_id не передан")
+
+        auth_token = db.query(AuthToken).filter(
+            (AuthToken.entity_id == user_id)
+        ).delete()
+
+        if auth_token == 0:
+            raise SpecialException("Пользователь и так не авторизован")
+
+        db.commit()
+
+    except ValueError as e:
+        db.rollback()
+        raise SpecialException(f"Ошибка валидации данных: {e}")
+
+    finally:
+        if db is not None:
+            db.close()

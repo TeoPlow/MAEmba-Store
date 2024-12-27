@@ -20,15 +20,30 @@ def validate_auth_handler(request: ValidateAuthRequest):
         query = db.query(AuthToken).filter(AuthToken.token == token)
         auth_token = query.first()
         if not auth_token:
-            time_now = datetime.now(pytz.timezone('Europe/Moscow'))
-            if auth_token.expires_at < time_now:
-                log.warning("Токен авторизации истёк")
-                raise SpecialException("Истёкший токен авторизации")
             log.warning("Токен авторизации недействителен или истёк")
             raise SpecialException("Неверный или истекший токен авторизации")
+
+        time_now = datetime.now(pytz.timezone('Europe/Moscow'))
+        if auth_token.expires_at < time_now:
+            log.warning("Токен авторизации истёк")
+            raise SpecialException("Истёкший токен авторизации")
 
         query = db.query(User).filter(User.id == auth_token.entity_id)
         current_user = query.first()
         if not current_user:
             log.error("Пользователь, связанный с токеном, не найден")
             raise SpecialException("Ошибка аутентификации")
+
+
+def check_verify(user_id: str) -> bool:
+    log.debug("Проверяю, верифицирована ли почта пользователя")
+    with next(get_db_users()) as db:
+        query = (
+            db.query(User)
+            .filter(
+                (User.id == user_id) & (User.user_role == "Verifyed")
+            )
+        ).first()
+        # log.debug(f"Вывод: {query}")
+        if not query:
+            raise SpecialException("У вас не авторизована почта!")

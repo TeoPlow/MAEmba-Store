@@ -76,3 +76,25 @@ class SendConfirmationEmailRequest(BaseModel):
 class SendConfirmationEmailResponse(BaseModel):
     status: str
     message: str
+
+
+# Схема для POST /change-password
+class ChangePasswordRequest(BaseModel):
+    email: EmailStr
+    user_id: UUID
+
+
+class ChangePasswordResponse(BaseModel):
+    status: str
+    message: str
+
+
+# Схема для POST /confirm-change-password
+class ConfirmChangePasswordRequest(BaseModel):
+    user_id: UUID
+    password: str
+
+
+# Схема для POST /logout
+class LogoutRequest(BaseModel):
+    user_id: UUID

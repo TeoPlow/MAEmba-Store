@@ -4,11 +4,13 @@ from http import HTTPStatus
 from fastapi.responses import JSONResponse
 
 from src.core.exceptions import SpecialException
-from src.handlers.validate_auth import validate_auth_handler
+from src.handlers.validate_auth import validate_auth_handler, check_verify
 from src.handlers.user_register import user_register_handler
-from src.handlers.user_login import user_login_handler
+from src.handlers.user_login import user_login_handler, user_logout_handler
 from src.handlers.email_confirm import (confirm_email_handler,
-                                        send_confirmation_email_handler)
+                                        send_confirmation_email_handler,
+                                        change_password_handler,
+                                        confirm_change_password_handler)
 from src.core.logging import log
 
 from src.schemas.user_auth_schema import (
@@ -18,7 +20,11 @@ from src.schemas.user_auth_schema import (
     LoginResponse,
     SendConfirmationEmailRequest,
     SendConfirmationEmailResponse,
-    ValidateAuthRequest
+    ValidateAuthRequest,
+    ChangePasswordRequest,
+    ChangePasswordResponse,
+    ConfirmChangePasswordRequest,
+    LogoutRequest
 )
 
 router = APIRouter()
@@ -67,6 +73,35 @@ async def login(request: LoginRequest):
             content={"status": "success",
                      "data": {"token": str(token),
                               "token-expiry": token_expiry.total_seconds()}},
+            status_code=HTTPStatus.OK
+        )
+    except SpecialException as e:
+        log.error(f'Ошибка: {e}')
+        return JSONResponse(
+            content={"status": "warning", "message": str(e)},
+            status_code=HTTPStatus.UNAUTHORIZED
+        )
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return JSONResponse(
+            content={"status": "error", "message": str(e)},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+
+
+@router.post(
+    "/logout",
+    description="Деавторизация пользователя",
+    response_model=ChangePasswordResponse,
+    response_description="Успешность операции и сообщение",
+)
+async def logout(request: LogoutRequest):
+    log.debug("Деавторизую пользователя")
+    try:
+        user_logout_handler(request.model_dump())
+        return JSONResponse(
+            content={"status": "success",
+                     "message": "Пользователь больше не авторизован"},
             status_code=HTTPStatus.OK
         )
     except SpecialException as e:
@@ -143,6 +178,7 @@ async def send_confirmation_email(request: SendConfirmationEmailRequest):
     description="Подтверждение почты",
 )
 async def confirm_email(token: str):
+    log.debug("Подтверждаю почту")
     try:
         token_data = confirm_email_handler(token)
         return JSONResponse(
@@ -164,10 +200,90 @@ async def confirm_email(token: str):
         )
 
 
-# @router.get("/protected-resource/")
-# async def protected_resource(user_email: str, db: Session = Depends(get_db)):
-#     user = db.query(User).filter(User.email == user_email).first()
-#     if not user or not user.is_verified:
-#         raise HTTPException(status_code=403,
-#                             detail="Электронная почта не подтверждена")
-#     return {"message": "Добро пожаловать в защищённый раздел!"}
+@router.get(
+    "/protected-resource/{user_id}",
+    description="Предоставляет доступ к защищённому ресурсу"
+)
+async def protected_resource(user_id: str):
+    log.debug("Предоставляю доступ к защищённому ресурсу")
+    try:
+        check_verify(user_id)
+        return JSONResponse(
+                content={"status": "success",
+                         "message": "Вы в защищённом разделе!"},
+                status_code=HTTPStatus.OK
+            )
+    except SpecialException as e:
+        log.error(e)
+        return JSONResponse(
+            content={"status": "warning", "message": str(e)},
+            status_code=HTTPStatus.BAD_REQUEST
+        )
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return JSONResponse(
+            content={"status": "error", "message": str(e)},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+
+
+@router.post(
+    "/change-password",
+    description="Отправка ссылки на почту для изменения пароля",
+    response_model=ChangePasswordResponse,
+    response_description="Сообщение об отправке письма",
+)
+async def change_password(request: ChangePasswordRequest):
+    log.debug("Отправляю ссылку на подтверждение почты")
+    try:
+        message, fm = change_password_handler(request.email,
+                                              request.user_id)
+        await fm.send_message(message)
+        return JSONResponse(
+            content={"status": "success",
+                     "message": "Письмо о смене пароля отправлено на почту"},
+            status_code=HTTPStatus.OK
+        )
+    except SpecialException as e:
+        log.error(e)
+        return JSONResponse(
+            content={"status": "warning", "message": str(e)},
+            status_code=HTTPStatus.BAD_REQUEST
+        )
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return JSONResponse(
+            content={"status": "error", "message": str(e)},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        )
+
+
+@router.post(
+    "/confirm-change-password/{token}",
+    description="Подтверждение смены пароля",
+    response_model=ChangePasswordResponse,
+    response_description="Сообщение о состоянии смены пароля",
+)
+async def confirm_change_password(request: ConfirmChangePasswordRequest,
+                                  token: str):
+    try:
+        token_data = confirm_change_password_handler(request.password,
+                                                     request.user_id,
+                                                     token)
+        return JSONResponse(
+            content={"status": "success",
+                     "message": f"Пароль {token_data['email']} сменён"},
+            status_code=HTTPStatus.OK
+        )
+    except SpecialException as e:
+        log.error(e)
+        return JSONResponse(
+            content={"status": "warning", "message": str(e)},
+            status_code=HTTPStatus.BAD_REQUEST
+        )
+    except Exception as e:
+        log.error(f'Ошибка: {e}')
+        return JSONResponse(
+            content={"status": "error", "message": str(e)},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR
+        )

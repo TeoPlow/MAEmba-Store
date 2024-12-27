@@ -129,6 +129,24 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 63d22fa12aab, user_auth_ta
     }
     ```
 
+## **/logout**
+
+Забирает авторизацию у пользователя. 
+- ### POST 
+
+    Запрос:
+
+        POST http://0.0.0.0:8001/auth/logout
+        
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Пользователь больше не авторизован"
+    }
+    ```
+
 ## **/send-confirmation-email**
 
 Отправляю пользователю ссылку на почту для авторизации.
@@ -151,5 +169,114 @@ INFO  [alembic.runtime.migration] Running upgrade  -> 63d22fa12aab, user_auth_ta
     {
     "status": "success",
     "message": "Письмо отправлено, проверьте почту."
+    }
+    ```
+
+## **/confirm-email/{token}**
+
+Подтверждает почту по токену (из ссылки с почты).
+- ### GET 
+
+    Запрос:
+
+        GET http://0.0.0.0:8001/auth/confirm-email/eeee1234-76a9-4509-87f0-e1b12354d92b
+      
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Почта email@mail.ru подтверждена"
+    }
+    ```
+
+## **/validate-auth**
+
+Проверяет аутентификацию пользователя по куке.
+- ### POST 
+
+    Запрос:
+
+        POST http://0.0.0.0:8001/auth/validate-auth
+
+    ```json
+    {
+    "auth_token": "eeee1234-76a9-4509-87f0-e1b12354d92b"
+    }
+    ```
+        
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    }
+    ```
+
+## **/protected-resource/{user_id}**
+
+Предоставляет доступ к защищённому ресурсу.
+- ### GET 
+
+    Запрос:
+
+        GET http://0.0.0.0:8001/auth/protected-resource/eeee1234-76a9-4509-87f0-e1b12354d92b
+      
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Вы в защищённом разделе!"
+    }
+    ```
+
+## **/change-password**
+
+Отправка ссылки на почту для изменения пароля.
+- ### POST 
+
+    Запрос:
+
+        POST http://0.0.0.0:8001/auth/change-password
+
+    ```json
+    {
+    "email": "email@mail.ru",
+    "user_id": "eeee1234-76a9-4509-87f0-e1b12354d92b"
+    }
+    ```
+        
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Письмо о смене пароля отправлено на почту"
+    }
+    ```
+
+## **/confirm-change-password/{token}**
+
+Отправка ссылки на почту для изменения пароля.
+- ### POST 
+
+    Запрос:
+
+        POST http://0.0.0.0:8001/auth/confirm-change-password/eeee1234-76a9-4509-87f0-e1b12354d92b
+
+    ```json
+    {
+    "user_id": "eeee1234-76a9-4509-87f0-e1b12354d92b",
+    "password": "new_password"
+    }
+    ```
+        
+
+    Ответ:
+    ```json
+    {
+    "status": "success",
+    "message": "Пароль email@mail.ru сменён"
     }
     ```
