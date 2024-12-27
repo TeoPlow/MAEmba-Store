@@ -1,15 +1,18 @@
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
-from src.routes import order
+from src.routes import recommend
 from src.core.dependencies import setup_dependencies
 from src.core.config import cfg
 from src.core.logging import LOGGING
+
+from consumer import consume
+import asyncio
 import logging
 import uvicorn
 
 app = FastAPI(default_response_class=ORJSONResponse)
 
-app.include_router(order.router, prefix="")
+app.include_router(recommend.router, prefix="")
 
 
 def start_app(config):
@@ -32,6 +35,10 @@ def start_app(config):
 
 
 setup_dependencies(app)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(consume())
 
 if __name__ == "__main__":
     start_app(cfg)

@@ -1,9 +1,18 @@
 import dataclasses
-from pydantic import BaseModel
-from typing import Generic, TypeVar
+from pydantic import BaseModel, Field
+from typing import Generic, TypeVar, List
 
 ModelType = TypeVar("ModelType", bound=BaseModel)
 
+
+class RecommendationRequest(BaseModel):
+    user_id: str = Field(..., description="Уникальный идентификатор пользователя (UUID)")
+
+class RecommendationResponse(BaseModel):
+    recommended_products: List[str] = Field(..., description="Список рекомендованных товаров (ID товаров в виде строк)")
+
+class PredictPriceRequest(BaseModel):
+    item_id: int
 
 @dataclasses.dataclass
 class Error:
