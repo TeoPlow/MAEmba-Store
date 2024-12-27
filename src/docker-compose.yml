@@ -6,24 +6,24 @@ services:
       context: ./backend/user_auth_service
       dockerfile: Dockerfile
     ports:
-      - "8002:8000"
+      - "8000:8000"
     environment:
-      - PORT=8002
+      - PORT=8000
 
   items-service:
     build:
       context: ./backend/items_service
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
-      - PORT=8000
+      - PORT=8001
 
   cart-service:
     build:
       context: ./backend/cart_service
       dockerfile: Dockerfile
     ports:
-      - "8001:8000"
+      - "8002:8000"
     environment:
-      - PORT=8001
+      - PORT=8002

@@ -11,4 +11,8 @@ app = FastAPI(
 app.include_router(items.router, prefix="/item")
 app.include_router(categories.router, prefix="/category")
 
+@app.get("/")
+async def root():
+    return {"message": "Это Item API для проекта MAEMBA Store"}
+
 app.add_exception_handler(SpecialException, special_exception_handler)
