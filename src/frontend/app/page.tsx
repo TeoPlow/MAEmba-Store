@@ -23,73 +23,38 @@ export default function Page() {
                 items={[
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                   {
                     id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
-                  },
-                  {
-                    id: 0,
-                    name: "Комикс Маус",
-                    price: 550
+                    name: "PlayStation 5 Pro",
+                    price: 68000
                   },
                 ]}
               />
