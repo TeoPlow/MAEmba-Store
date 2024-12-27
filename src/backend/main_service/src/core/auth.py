@@ -10,12 +10,8 @@ from src.core.logging import log
 
 def set_cookie(response: Response, name: str, value: str, max_age: int):
     log.debug("Устанавливаю куку")
-    # httponly=True, secure=True отвечают за безопасность
-    response.set_cookie(key=name,
-                        value=value,
-                        max_age=max_age,
-                        httponly=True,
-                        secure=True)
+    cookie_value = f"{name}={value}; Max-Age={max_age}; Path=/; HttpOnly; Secure"
+    response.headers["Set-Cookie"] = cookie_value
 
 
 def login_required(f):
