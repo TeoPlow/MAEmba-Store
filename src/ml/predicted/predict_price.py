@@ -71,8 +71,11 @@ def forecast_price1(item_id:int) -> float:
   item_data = sales_train_grouped[sales_train_grouped['item_id'] == item_id]
   
   if len(item_data) == 0:
-    # Если ранее покупок не было, то выводим -1 (это временно, скоро исправим)
-    return -1
+      # Если не было товара ранее, то назначаем медианную цену категории
+      items = pd.read_csv("items.csv")
+      tmp_t = pd.merge(sales_train,items,how='inner')
+      categ_id = items[items['item_id'] == item_id]['item_category_id'].values[0]
+      return tmp_t.groupby(['item_category_id']).agg({'item_price':'median'}).loc[categ_id]['item_price']
   elif len(item_data) == 1:
     tmp = pd.DataFrame({'item_id':[item_id],'date':[pd.to_datetime(max(sales_train['date']))],'item_price':[item_data['item_price'].iloc[0]]})
     item_data = pd.concat([tmp,item_data])
