@@ -5,7 +5,6 @@ import asyncio
 
 app = FastAPI()
 
-
 async def consume():
     connection = await aio_pika.connect_robust("amqp://user:password@localhost/")
 
