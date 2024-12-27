@@ -10,7 +10,7 @@ from alembic import context
 
 from src.models.items import BaseItems
 from src.models.categories import BaseItems
-from backend.items_service.src.db.database import BaseItems
+from src.db.database import BaseItems
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
