@@ -28,6 +28,8 @@ MAIL_FROM = os.environ.get("MAIL_FROM")
 MAIL_STARTTLS = os.environ.get("MAIL_STARTTLS")
 MAIL_SSL_TLS = os.environ.get("MAIL_SSL_TLS")
 
+MAIN_API_URL = os.environ.get("MAIN_API_URL")
+
 # Вот здесь нужно поменять на наш эндпоинт
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/mae/login")
 
