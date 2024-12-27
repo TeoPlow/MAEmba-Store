@@ -5,7 +5,9 @@ from src.models.items import Item
 from src.schemas.result import Result, Error, GenResult
 from src.storage.item import ItemRepository
 from typing import List, Optional
-from src.core.rabbitmq import send_message
+from src.core.rabbitmq import send_message_item
+import logging
+
 
 class ItemHandlerABC(ABC):
     @abstractmethod
@@ -46,9 +48,11 @@ class ItemHandler(ItemHandlerABC):
         return GenResult.success(resp)
 
     async def create_item(self, item_dto: items.CreateItemDto) -> GenResult[None]:
-        await self._repository.insert(body=item_dto)
+        item = await self._repository.insert(body=item_dto)
         await self._repository.commit()
-        await send_message(item_dto.model_dump_json())
+        await send_message_item(items.ItemDto(**item.to_dict()).model_dump_json())
+        logging.info(f"send to items: {items.ItemDto(
+            **item.to_dict()).model_dump_json()}")
         return GenResult.success(None)
 
     async def update_item(self, item_dto) -> GenResult[None]:
